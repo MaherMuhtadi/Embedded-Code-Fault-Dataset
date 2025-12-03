@@ -1,2 +1,3 @@
-# Ignore cloned repository of dyesmar/sei-cert-ccs-samples to avoid staging issues
+# Ignore cloned repositories of regehr/itc-benchmarks and dyesmar/sei-cert-ccs-samples to avoid staging issues
 sei-cert-ccs-samples
+itc-benchmarks
