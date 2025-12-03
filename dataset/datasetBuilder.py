@@ -1,10 +1,11 @@
 import re
 import os
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 ROOT = "itc-benchmarks"
 SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ALL_ROWS = []
 
 
 # Remove comment-only lines
@@ -257,6 +258,18 @@ def main(c_file, label):
     wb.save(output_file)
     print(f"\nExcel file created: {output_file}\n")
 
+    # Collect rows for combined dataset
+    wb_individual = load_workbook(output_file)
+    ws_individual = wb_individual.active
+
+    # Skip header row for all except the first file
+    for i, row in enumerate(ws_individual.iter_rows(values_only=True)):
+        if i == 0 and not ALL_ROWS:
+            ALL_ROWS.append(row)  # include header only once
+        elif i > 0:
+            ALL_ROWS.append(row)
+
+
 
 # Entry point
 
@@ -281,3 +294,15 @@ if __name__ == "__main__":
             full_path = os.path.join(folder, fname)
             print(f"Processing: {full_path}")
             main(full_path, label)
+    
+    # Write combined dataset
+    combined_wb = Workbook()
+    combined_ws = combined_wb.active
+    combined_ws.title = "Combined"
+
+    for row in ALL_ROWS:
+        combined_ws.append(row)
+
+    combined_output = os.path.join(SCRIPT_DIR, "dataset.xlsx")
+    combined_wb.save(combined_output)
+    print(f"\nCombined Excel file created: {combined_output}\n")
