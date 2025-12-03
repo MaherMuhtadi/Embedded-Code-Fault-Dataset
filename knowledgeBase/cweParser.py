@@ -4,21 +4,18 @@ import re
 import xml.etree.ElementTree as ET
 from typing import List, Dict, Any
 
-# -------------------------------------------------------------------
-# CONFIG
-# -------------------------------------------------------------------
+
+# Paths
 
 CWE_XML_PATH = "cweData/cwec_v4.18.xml"
 EXTRACTED_IDS_PATH = "mapping/extracted_ids.json"
-OUTPUT_DIR = "vector_kb/cwe"
-OUTPUT_JSONL = "vector_kb/all_cwe_docs.jsonl"
+OUTPUT_DIR = "vectorKB/cwe"
+OUTPUT_JSONL = "vectorKB/all_cwe_docs.jsonl"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# -------------------------------------------------------------------
 # Helpers
-# -------------------------------------------------------------------
 
 def clean(text: str) -> str:
     if not text:
@@ -27,14 +24,12 @@ def clean(text: str) -> str:
 
 
 def extract_text(elem: ET.Element) -> str:
-    """Extracts all text content including children."""
     if elem is None:
         return ""
     return clean(" ".join(elem.itertext()))
 
 
 def chunk_text(text: str, max_chars: int = 1500) -> List[str]:
-    """Split into embedding-friendly chunks."""
     text = clean(text)
     if not text:
         return []
@@ -56,9 +51,7 @@ def chunk_text(text: str, max_chars: int = 1500) -> List[str]:
     return chunks
 
 
-# -------------------------------------------------------------------
-# Load target CWE IDs (the ones you extracted earlier)
-# -------------------------------------------------------------------
+# Load target CWE IDs
 
 with open(EXTRACTED_IDS_PATH, "r", encoding="utf-8") as f:
     ids_json = json.load(f)
@@ -67,9 +60,7 @@ target_cwe_ids = set(ids_json.get("CWE_IDs", []))
 numeric_ids = {cid.split("-")[1] for cid in target_cwe_ids}
 
 
-# -------------------------------------------------------------------
 # Parse CWE XML with correct namespace
-# -------------------------------------------------------------------
 
 print(f"Parsing CWE XML from: {CWE_XML_PATH}")
 
@@ -84,9 +75,7 @@ weakness_elems = root.findall(".//cwe:Weaknesses/cwe:Weakness", ns)
 print(f"Found {len(weakness_elems)} Weakness entries in XML.")
 
 
-# -------------------------------------------------------------------
 # Process Weaknesses
-# -------------------------------------------------------------------
 
 all_docs: List[Dict[str, Any]] = []
 
@@ -168,9 +157,7 @@ for w in weakness_elems:
     print(f"[OK] {cwe_id}: {len(cwe_docs)} chunks saved → {out_path}")
 
 
-# -------------------------------------------------------------------
 # Save combined JSONL
-# -------------------------------------------------------------------
 
 with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
     for d in all_docs:

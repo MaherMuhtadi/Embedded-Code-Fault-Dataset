@@ -4,17 +4,15 @@ import json
 from typing import List, Dict
 import pdfplumber
 
-# -------------------------------------------------------------------
-# CONFIG
-# -------------------------------------------------------------------
 
-# Paths (adjust if needed)
+# Paths
+
 EXTRACTED_IDS_PATH = os.path.join("mapping", "extracted_ids.json")
 PDF_PATH = "certData/SEI_CERT_C_Coding_Standard_2016_Edition.pdf"
 SAMPLES_ROOT = "certData/sei-cert-ccs-samples"
 
-OUTPUT_DIR = "vector_kb/cert"
-OUTPUT_JSONL = "vector_kb/all_cert_docs.jsonl"
+OUTPUT_DIR = "vectorKB/cert"
+OUTPUT_JSONL = "vectorKB/all_cert_docs.jsonl"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -25,9 +23,7 @@ RULE_HEADER_RE = re.compile(r"^\d+\.\d+\s+([A-Z]{3}\d{2}-C)\.\s+(.+)$")
 RULE_ID_RE = re.compile(r"[A-Z]{3}\d{2}-C")
 
 
-# -------------------------------------------------------------------
 # Common helpers
-# -------------------------------------------------------------------
 
 def norm_ws(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
@@ -53,9 +49,7 @@ def chunk_text(text: str, max_chars: int = 1500) -> List[str]:
     return chunks
 
 
-# -------------------------------------------------------------------
 # Load target CERT rule IDs
-# -------------------------------------------------------------------
 
 def load_target_rule_ids() -> set:
     with open(EXTRACTED_IDS_PATH, "r", encoding="utf-8") as f:
@@ -64,18 +58,12 @@ def load_target_rule_ids() -> set:
     print(f"[INFO] Loaded {len(rules)} target CERT rules from {EXTRACTED_IDS_PATH}")
     return rules
 
-
 TARGET_RULE_IDS = load_target_rule_ids()
 
 
-# -------------------------------------------------------------------
-# 1. Parse PDF: get rule descriptions (no code needed from PDF)
-# -------------------------------------------------------------------
+# Parse PDF: get rule descriptions (no code needed from PDF)
 
 def extract_rules_from_pdf(pdf_path: str) -> Dict[str, Dict]:
-    """
-    Returns {rule_id: {"title": str, "body": str}} for all rules found in the PDF.
-    """
     print(f"[PDF] Parsing rules from: {pdf_path}")
     rules: Dict[str, Dict] = {}
 
@@ -122,11 +110,6 @@ def extract_rules_from_pdf(pdf_path: str) -> Dict[str, Dict]:
 
 
 def split_description_from_pdf(raw_text: str) -> str:
-    """
-    From a full rule body, keep only the descriptive part (before
-    'Noncompliant Code Example' / 'Compliant Solution' headings).
-    This matches the structure described in the standard. :contentReference[oaicite:2]{index=2}
-    """
     text = raw_text
 
     # Look for the earliest occurrence of any example heading
@@ -149,11 +132,6 @@ def split_description_from_pdf(raw_text: str) -> str:
 
 
 def build_docs_from_pdf(rules_from_pdf: Dict[str, Dict]) -> Dict[str, List[Dict]]:
-    """
-    For each rule in TARGET_RULE_IDS, create docs containing only
-    the description / explanation text from the PDF.
-    Returns {rule_id: [doc, ...]}.
-    """
     per_rule_docs: Dict[str, List[Dict]] = {}
 
     for rule_id, data in rules_from_pdf.items():
@@ -189,9 +167,7 @@ def build_docs_from_pdf(rules_from_pdf: Dict[str, Dict]) -> Dict[str, List[Dict]
     return per_rule_docs
 
 
-# -------------------------------------------------------------------
-# 2. Parse GitHub samples: compliant & noncompliant code
-# -------------------------------------------------------------------
+# Parse GitHub samples: compliant & noncompliant code
 
 def infer_rule_id(path: str, content: str) -> str:
     # Try path first
@@ -206,12 +182,6 @@ def infer_rule_id(path: str, content: str) -> str:
 
 
 def infer_code_kind(path: str) -> str:
-    """
-    Best-effort label for code sample:
-    - 'noncompliant' if filename/path contains 'noncompliant', 'bad', 'unsafe'
-    - 'compliant' if contains 'compliant', 'good', 'safe', 'fix'
-    - otherwise 'unknown'
-    """
     lower = path.lower()
     if any(k in lower for k in ["noncompliant", "bad", "unsafe", "vuln"]):
         return "noncompliant"
@@ -221,15 +191,6 @@ def infer_code_kind(path: str) -> str:
 
 
 def build_docs_from_samples() -> Dict[str, List[Dict]]:
-    """
-    Parse samples from the GitHub repo according to the official structure:
-    
-        rules/<category>/<number>/
-            nc*.c   -> noncompliant
-            c*.c    -> compliant
-    
-    And only extract CERT rules listed in TARGET_RULE_IDS.
-    """
     per_rule_docs: Dict[str, List[Dict]] = {}
 
     print(f"[SAMPLES] Scanning structured repo at: {SAMPLES_ROOT}/rules")
@@ -303,9 +264,7 @@ def build_docs_from_samples() -> Dict[str, List[Dict]]:
     return per_rule_docs
 
 
-# -------------------------------------------------------------------
-# 3. Combine PDF + samples, save per rule + global JSONL
-# -------------------------------------------------------------------
+# Combine PDF + samples, save per rule + global JSONL
 
 def main():
     rules_pdf_raw = extract_rules_from_pdf(PDF_PATH)
