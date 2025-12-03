@@ -6,6 +6,9 @@ ROOT = "itc-benchmarks"
 SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ALL_ROWS = []
+KEYWORDS = {
+            "if","for","while","switch","return","sizeof","case","else","goto"
+        }
 
 
 # Remove comment-only lines
@@ -94,6 +97,9 @@ def extract_function_blocks(code):
 
     for match in func_pattern.finditer(code):
         return_type, name, args = match.groups()
+
+        if name in KEYWORDS:
+            continue
 
         start = match.start()
 
@@ -252,8 +258,7 @@ def main(c_file, label):
         ws.append([c_file_dirname, func, single_line, label])
 
     # Output file name
-    output_file = f"{c_file[:-2]}.xlsx"
-    output_file = output_file.replace(ROOT, SCRIPT_DIR)
+    output_file = f"{SCRIPT_DIR}/{label}/{os.path.basename(c_file)[:-2]}.xlsx"
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     wb.save(output_file)
     print(f"\nExcel file created: {output_file}\n")
@@ -286,7 +291,7 @@ if __name__ == "__main__":
         for fname in os.listdir(folder):
 
             # Skip files we do NOT want
-            if fname in ("main.c", "Makefile.am"):
+            if fname in ("main.c", "Makefile.am", "stubs.c"):
                 continue
             if not fname.endswith(".c"):
                 continue
