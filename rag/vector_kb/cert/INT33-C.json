@@ -1,0 +1,42 @@
+[
+  {
+    "id": "INT33-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "INT33-C",
+    "title": "Ensure that division and remainder operations do not",
+    "kind": "description",
+    "text": "result in divide-by-zero errors The C Standard identifies the following condition under which division and remainder operations result in undefined behavior (UB): UB Description 45 The value of the second operand of the / or % opera- tor is zero (6.5.5). Ensure that division and remainder operations do not result in divide-by-zero errors. 5.4.1 Division The result of the operator is the quotient from the division of the first arithmetic operand by the / second arithmetic operand. Division operations are susceptible to divide-by-zero errors. Overflow can also occur during two’s complement signed integer division when the dividend is equal to the minimum (most negative) value for the signed integer type and the divisor is equal to (See −1. INT32-C. Ensure that operations on signed integers do not result in overflow.) 5.4.1.1"
+  },
+  {
+    "id": "INT33-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT33-C",
+    "file_path": "rules/int/33/c0.c",
+    "kind": "compliant",
+    "text": "// INT33-C: Compliant Solution\n#include <limits.h>\n  \nvoid func(signed long s_a, signed long s_b) {\n  signed long result;\n  if ((s_b == 0) || ((s_a == LONG_MIN) && (s_b == -1))) {\n    /* Handle error */\n  } else {\n    result = s_a / s_b;\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT33-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT33-C",
+    "file_path": "rules/int/33/c1.c",
+    "kind": "compliant",
+    "text": "// INT33-C: Compliant Solution\n#include <limits.h>\n  \nvoid func(signed long s_a, signed long s_b) {\n  signed long result;\n  if ((s_b == 0 ) || ((s_a == LONG_MIN) && (s_b == -1))) {\n    /* Handle error */\n  } else {\n    result = s_a % s_b;\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT33-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT33-C",
+    "file_path": "rules/int/33/nc0.c",
+    "kind": "noncompliant",
+    "text": "// INT33-C: Noncompliant Code Example\n#include <limits.h>\n  \nvoid func(signed long s_a, signed long s_b) {\n  signed long result;\n  if ((s_a == LONG_MIN) && (s_b == -1)) {\n    /* Handle error */\n  } else {\n    result = s_a / s_b;\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT33-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT33-C",
+    "file_path": "rules/int/33/nc1.c",
+    "kind": "noncompliant",
+    "text": "// INT33-C: Noncompliant Code Example\n#include <limits.h>\n  \nvoid func(signed long s_a, signed long s_b) {\n  signed long result;\n  if ((s_a == LONG_MIN) && (s_b == -1)) {\n    /* Handle error */\n  } else {\n    result = s_a % s_b;\n  }\n  /* ... */\n}\n"
+  }
+]

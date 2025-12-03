@@ -1,0 +1,114 @@
+[
+  {
+    "id": "ARR30-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "ARR30-C",
+    "title": "Do not form or use out-of-bounds pointers or array",
+    "kind": "description",
+    "text": "subscripts The C Standard identifies the following distinct situations in which undefined behavior (UB) can arise as a result of invalid pointer operations: UB Description Example Code 46 Addition or subtraction of a pointer Forming Out-of-Bounds Pointer, into, or just beyond, an array ob- Null Pointer Arithmetic ject and an integer type produces a result that does not point into, or just beyond, the same array ob- ject. 47 Addition or subtraction of a pointer Dereferencing Past the End into, or just beyond, an array ob- Pointer, Using Past the End Index ject and an integer type produces a result that points just beyond the array object and is used as the op- erand of a unary * operator that is evaluated. 49 An array subscript is out of range, Apparently Accessible Out-of- even if an object is apparently ac- Range Index cessible with the given subscript, for example, in the lvalue expres- sion a [1] [7] given the declaration int a [4] [5]). 62 An attempt is made to access, or Pointer Past Flexible Array Mem- generate a pointer to just past, a ber flexible array member of a struc- ture when the referenced object provides no elements for that ar- ray. 7.1.1"
+  },
+  {
+    "id": "ARR30-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c0.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\nenum { TABLESIZE = 100 };\n \nstatic int table[TABLESIZE];\n \nint *f(int index) {\n  if (index >= 0 && index < TABLESIZE) {\n    return table + index;\n  }\n  return NULL;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c1.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\n#include <stddef.h>\n  \nenum { TABLESIZE = 100 };\n \nstatic int table[TABLESIZE];\n \nint *f(size_t index) {\n  if (index < TABLESIZE) {\n    return table + index;\n  }\n  return NULL;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c2.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\nHRESULT GetMachineName(\n  wchar_t *pwszPath,\n  wchar_t wszMachineName[MAX_COMPUTERNAME_LENGTH_FQDN+1])\n{\n  wchar_t *pwszServerName = wszMachineName;\n  wchar_t *pwszTemp = pwszPath + 2;\n  wchar_t *end_addr\n    = pwszServerName + MAX_COMPUTERNAME_LENGTH_FQDN;\n  while ((*pwszTemp != L'\\\\') &&\n         (*pwszTemp != L'\\0') &&\n         (pwszServerName < end_addr))\n  {\n    *pwszServerName++ = *pwszTemp++;\n  }\n \n  /* ... */\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c3.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\n#include <stdint.h>\n#include <stdlib.h>\n  \nstatic int *table = NULL;\nstatic size_t size = 0;\n \nint insert_in_table(size_t pos, int value) {\n  if (size <= pos) {\n    if ((SIZE_MAX - 1 < pos) ||\n        ((pos + 1) > SIZE_MAX / sizeof(*table))) {\n      return -1;\n    }\n  \n    int *tmp = (int *)realloc(table, sizeof(*table) * (pos + 1));\n    if (tmp == NULL) {\n      return -1;\n    }\n    /* Modify size only after realloc() succeeds */\n    size  = pos + 1;\n    table = tmp;\n  }\n \n  table[pos] = value;\n  return 0;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c4.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\n#include <stddef.h>\n#define COLS 5\n#define ROWS 7\nstatic int matrix[ROWS][COLS];\n \nvoid init_matrix(int x) {\n  for (size_t i = 0; i < ROWS; i++) {\n    for (size_t j = 0; j < COLS; j++) {\n      matrix[i][j] = x;\n    }\n  }\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c5.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution\n#include <stdlib.h>\n  \nstruct S {\n  size_t len;\n  char buf[];  /* Flexible array member */\n};\n \nconst char *find(const struct S *s, int c) {\n  const char *first = s->buf;\n  const char *last  = s->buf + s->len;\n \n  while (first != last) { /* Avoid incrementing here */\n    if (*++first == (unsigned char)c) {\n      return first;\n    }\n  }\n  return NULL;\n}\n  \nvoid g(void) {\n  struct S *s = (struct S *)malloc(sizeof(struct S));\n  if (s == NULL) {\n    /* Handle error */\n  }\n  s->len = 0;\n  find(s, 'a');\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_c6.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/c6.c",
+    "kind": "compliant",
+    "text": "// ARR30-C: Compliant Solution  (Null Pointer Arithmetic)\n#include <string.h>\n#include <stdlib.h>\n \nchar *init_block(size_t block_size, size_t offset,\n                 char *data, size_t data_size) {\n  char *buffer = malloc(block_size);\n  if (NULL == buffer) {\n    /* Handle error */\n  }\n  if (data_size > block_size || block_size - data_size < offset) {\n    /* Data won't fit in buffer, handle error */\n  }\n  memcpy(buffer + offset, data, data_size);\n  return buffer;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc0.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Forming Out-of-Bounds Pointer)\nenum { TABLESIZE = 100 };\n \nstatic int table[TABLESIZE];\n \nint *f(int index) {\n  if (index < TABLESIZE) {\n    return table + index;\n  }\n  return NULL;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc1.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Dereferencing Past-the-End Pointer)\nerror_status_t _RemoteActivation(\n      /* ... */, WCHAR *pwszObjectName, ... ) {\n   *phr = GetServerPath(\n              pwszObjectName, &pwszObjectName);\n    /* ... */\n}\n \nHRESULT GetServerPath(\n  WCHAR *pwszPath, WCHAR **pwszServerPath ){\n  WCHAR *pwszFinalPath = pwszPath;\n  WCHAR wszMachineName[MAX_COMPUTERNAME_LENGTH_FQDN+1];\n  hr = GetMachineName(pwszPath, wszMachineName);\n  *pwszServerPath = pwszFinalPath;\n}\n \nHRESULT GetMachineName(\n  WCHAR *pwszPath,\n  WCHAR wszMachineName[MAX_COMPUTERNAME_LENGTH_FQDN+1])\n{\n  pwszServerName = wszMachineName;\n  LPWSTR pwszTemp = pwszPath + 2;\n  while (*pwszTemp != L'\\\\')\n    *pwszServerName++ = *pwszTemp++;\n  /* ... */\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc2.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Using Past-the-End Index)\n#include <stdlib.h>\n  \nstatic int *table = NULL;\nstatic size_t size = 0;\n \nint insert_in_table(size_t pos, int value) {\n  if (size < pos) {\n    int *tmp;\n    size = pos + 1;\n    tmp = (int *)realloc(table, sizeof(*table) * size);\n    if (tmp == NULL) {\n      return -1;   /* Failure */\n    }\n    table = tmp;\n  }\n \n  table[pos] = value;\n  return 0;\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc3.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Apparently Accessible Out-of-Range Index)\n#include <stddef.h>\n#define COLS 5\n#define ROWS 7\nstatic int matrix[ROWS][COLS];\n \nvoid init_matrix(int x) {\n  for (size_t i = 0; i < COLS; i++) {\n    for (size_t j = 0; j < ROWS; j++) {\n      matrix[i][j] = x;\n    }\n  }\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc4.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Pointer Past Flexible Array Member)\n#include <stdlib.h>\n  \nstruct S {\n  size_t len;\n  char buf[];  /* Flexible array member */\n};\n \nconst char *find(const struct S *s, int c) {\n  const char *first = s->buf;\n  const char *last  = s->buf + s->len;\n \n  while (first++ != last) { /* Undefined behavior */\n    if (*first == (unsigned char)c) {\n      return first;\n    }\n  }\n  return NULL;\n}\n  \nvoid g(void) {\n  struct S *s = (struct S *)malloc(sizeof(struct S));\n  if (s == NULL) {\n    /* Handle error */\n  }\n  s->len = 0;\n  find(s, 'a');\n}\n"
+  },
+  {
+    "id": "ARR30-C_samples_nc5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR30-C",
+    "file_path": "rules/arr/30/nc5.c",
+    "kind": "noncompliant",
+    "text": "// ARR30-C: Noncompliant Code Example (Null Pointer Arithmetic)\n#include <string.h>\n#include <stdlib.h>\n \nchar *init_block(size_t block_size, size_t offset,\n                 char *data, size_t data_size) {\n  char *buffer = malloc(block_size);\n  if (data_size > block_size || block_size - data_size < offset) {\n    /* Data won't fit in buffer, handle error */\n  }\n  memcpy(buffer + offset, data, data_size);\n  return buffer;\n}\n"
+  }
+]

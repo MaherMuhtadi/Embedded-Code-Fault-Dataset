@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-681_0",
+    "source": "CWE",
+    "cwe_id": "CWE-681",
+    "title": "Incorrect Conversion between Numeric Types",
+    "text": "Description: When converting from one data type to another, such as long to integer, data can be omitted or translated in a way that produces unexpected values. If the resulting values are used in a sensitive context, then dangerous behaviors may occur. Consequences: Other Integrity Unexpected State Quality Degradation The program could wind up using the wrong number and generate incorrect results. If the number is used to allocate resources or make a security decision, then this could introduce a vulnerability. Mitigations: Implementation Avoid making conversion between numeric types. Always check for the allowed ranges.",
+    "url": "https://cwe.mitre.org/data/definitions/681.html"
+  }
+]

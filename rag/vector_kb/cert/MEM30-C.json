@@ -1,0 +1,74 @@
+[
+  {
+    "id": "MEM30-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "MEM30-C",
+    "title": "Do not access freed memory",
+    "kind": "description",
+    "text": "Evaluating a pointer—including dereferencing the pointer, using it as an operand of an arithmetic operation, type casting it, and using it as the right-hand side of an assignment—into memory that has been deallocated by a memory management function is undefined behavior. Pointers to memory that has been deallocated are called dangling pointers. Accessing a dangling pointer can result in exploitable vulnerabilities. According to the C Standard, using the value of a pointer that refers to space deallocated by a call to the or function is undefined behavior. (See undefined behavior 177.) free() realloc() Reading a pointer to deallocated memory is undefined behavior because the pointer value is inde- terminate and might be a trap representation. Fetching a trap representation might perform a hard- ware trap (but is not required to). It is at the memory manager’s discretion when to reallocate or recycle the freed memory. When memory is freed, all pointers into it become invalid, and its contents might either be returned to the operating system, making the freed space inaccessible, or remain intact and accessible. As a result, the data at the freed location can appear to be valid but change unexpectedly. Conse- quently, memory must not be written to or read from once it is freed. 9.1.1"
+  },
+  {
+    "id": "MEM30-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/c0.c",
+    "kind": "compliant",
+    "text": "// MEM30-C: Compliant Solution\n#include <stdlib.h>\n  \nstruct node {\n  int value;\n  struct node *next;\n};\n  \nvoid free_list(struct node *head) {\n  struct node *q;\n  for (struct node *p = head; p != NULL; p = q) {\n    q = p->next;\n    free(p);\n  }\n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/c1.c",
+    "kind": "compliant",
+    "text": "// MEM30-C: Compliant Solution\n#include <stdlib.h>\n#include <string.h>\n \nint main(int argc, char *argv[]) {\n  char *return_val = 0;\n  const size_t bufsize = strlen(argv[0]) + 1;\n  char *buf = (char *)malloc(bufsize);\n  if (!buf) {\n    return EXIT_FAILURE;\n  }\n  /* ... */\n  strcpy(buf, argv[0]);\n  /* ... */\n  free(buf);\n  return EXIT_SUCCESS;\n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/c2.c",
+    "kind": "compliant",
+    "text": "// MEM30-C: Compliant Solution\n#include <stdlib.h>\n  \nvoid f(char *c_str1, size_t size) {\n  if (size != 0) {\n    char *c_str2 = (char *)realloc(c_str1, size);\n    if (c_str2 == NULL) {\n      free(c_str1);\n    }\n  }\n  else {\n    free(c_str1);\n  }\n  \n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/c3.c",
+    "kind": "compliant",
+    "text": "// MEM30-C: Compliant Solution\nvoid gdClipSetAdd(gdImagePtr im, gdClipRectanglePtr rect) {\n  gdClipRectanglePtr more;\n  if (im->clip == 0) {\n    /* ... */\n  }\n  if (im->clip->count == im->clip->max) {\n    more = gdRealloc (im->clip->list,(im->clip->max + 8) *\n                      sizeof (gdClipRectangle));\n    if (more == 0) return;\n    im->clip->max += 8;\n    im->clip->list = more;\n  }\n  im->clip->list[im->clip->count] = *rect;\n  im->clip->count++;\n \n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/nc0.c",
+    "kind": "noncompliant",
+    "text": "// MEM30-C: Noncompliant Code Example\n#include <stdlib.h>\n  \nstruct node {\n  int value;\n  struct node *next;\n};\n  \nvoid free_list(struct node *head) {\n  for (struct node *p = head; p != NULL; p = p->next) {\n    free(p);\n  }\n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/nc1.c",
+    "kind": "noncompliant",
+    "text": "// MEM30-C: Noncompliant Code Example\n#include <stdlib.h>\n#include <string.h>\n \nint main(int argc, char *argv[]) {\n  char *return_val = 0;\n  const size_t bufsize = strlen(argv[0]) + 1;\n  char *buf = (char *)malloc(bufsize);\n  if (!buf) {\n    return EXIT_FAILURE;\n  }\n  /* ... */\n  free(buf);\n  /* ... */\n  strcpy(buf, argv[0]);\n  /* ... */\n  return EXIT_SUCCESS;\n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/nc2.c",
+    "kind": "noncompliant",
+    "text": "// MEM30-C: Noncompliant Code Example\n#include <stdlib.h>\n  \nvoid f(char *c_str1, size_t size) {\n  char *c_str2 = (char *)realloc(c_str1, size);\n  if (c_str2 == NULL) {\n    free(c_str1);\n  }\n}\n"
+  },
+  {
+    "id": "MEM30-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM30-C",
+    "file_path": "rules/mem/30/nc3.c",
+    "kind": "noncompliant",
+    "text": "// MEM30-C: Noncompliant Code Example\nvoid gdClipSetAdd(gdImagePtr im, gdClipRectanglePtr rect) {\n  gdClipRectanglePtr more;\n  if (im->clip == 0) {\n   /* ... */\n  }\n  if (im->clip->count == im->clip->max) {\n    more = gdRealloc (im->clip->list,(im->clip->max + 8) *\n                      sizeof (gdClipRectangle));\n    /*\n     * If the realloc fails, then we have not lost the\n     * im->clip->list value.\n     */\n    if (more == 0) return;\n    im->clip->max += 8;\n  }\n  im->clip->list[im->clip->count] = *rect;\n  im->clip->count++;\n \n}\n"
+  }
+]

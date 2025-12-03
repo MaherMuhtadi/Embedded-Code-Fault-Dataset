@@ -1,0 +1,58 @@
+[
+  {
+    "id": "EXP36-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "EXP36-C",
+    "title": "Do not cast pointers into more strictly aligned pointer",
+    "kind": "description",
+    "text": "types Do not convert a pointer value to a pointer type that is more strictly aligned than the referenced type. Different alignments are possible for different types of objects. If the type-checking system is overridden by an explicit cast or the pointer is converted to a void pointer ( ) and then to void * a different type, the alignment of an object may be changed. The C Standard, 6.3.2.3, paragraph 7 [ISO/IEC 9899:2011], states A pointer to an object or incomplete type may be converted to a pointer to a different ob- ject or incomplete type. If the resulting pointer is not correctly aligned for the referenced type, the behavior is undefined. See undefined behavior 25. If the misaligned pointer is dereferenced, the program may terminate abnormally. On some archi- tectures, the cast alone may cause a loss of information even if the value is not dereferenced if the types involved have differing alignment requirements. 4.6.1"
+  },
+  {
+    "id": "EXP36-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/c0.c",
+    "kind": "compliant",
+    "text": "// EXP36-C: Compliant Solution (Intermediate Object)\n#include <assert.h>\n  \nvoid func(void) {\n  char c = 'x';\n  int i = c;\n  int *ip = &i;\n \n  assert(ip == &i);\n}\n"
+  },
+  {
+    "id": "EXP36-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/c1.c",
+    "kind": "compliant",
+    "text": "// EXP36-C: Compliant Solution\nint *loop_function(int *v_pointer) {\n  /* ... */\n  return v_pointer;\n}\n  \nvoid func(int *loop_ptr) {\n  int *int_ptr = loop_function(loop_ptr);\n \n  /* ... */\n}\n"
+  },
+  {
+    "id": "EXP36-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/c2.c",
+    "kind": "compliant",
+    "text": "// EXP36-C: Compliant Solution\n#include <string.h>\n  \nstruct foo_header {\n  int len;\n  /* ... */\n};\n   \nvoid func(char *data, size_t offset) {\n  struct foo_header header;\n  memcpy(&header, data + offset, sizeof(header));\n \n  /* ... */\n}\n"
+  },
+  {
+    "id": "EXP36-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/nc0.c",
+    "kind": "noncompliant",
+    "text": "// EXP36-C: Noncompliant Code Example\n#include <assert.h>\n  \nvoid func(void) {\n  char c = 'x';\n  int *ip = (int *)&c; /* This can lose information */\n  char *cp = (char *)ip;\n \n  /* Will fail on some conforming implementations */\n  assert(cp == &c);\n}\n"
+  },
+  {
+    "id": "EXP36-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/nc1.c",
+    "kind": "noncompliant",
+    "text": "// EXP36-C: Noncompliant Code Example\nint *loop_function(void *v_pointer) {\n  /* ... */\n  return v_pointer;\n}\n  \nvoid func(char *char_ptr) {\n  int *int_ptr = loop_function(char_ptr);\n \n  /* ... */\n}\n"
+  },
+  {
+    "id": "EXP36-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP36-C",
+    "file_path": "rules/exp/36/nc2.c",
+    "kind": "noncompliant",
+    "text": "// EXP36-C: Noncompliant Code Example\n#include <string.h>\n  \nstruct foo_header {\n  int len;\n  /* ... */\n};\n  \nvoid func(char *data, size_t offset) {\n  struct foo_header *tmp;\n  struct foo_header header;\n \n  tmp = (struct foo_header *)(data + offset);\n  memcpy(&header, tmp, sizeof(header));\n \n  /* ... */\n}\n"
+  }
+]

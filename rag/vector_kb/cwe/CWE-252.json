@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-252_0",
+    "source": "CWE",
+    "cwe_id": "CWE-252",
+    "title": "Unchecked Return Value",
+    "text": "Description: The product does not check the return value from a method or function, which can prevent it from detecting unexpected states and conditions. Extended Description: Two common programmer assumptions are \"this function call can never fail\" and \"it doesn't matter if this function call fails\". If an attacker can force the function to fail or otherwise return a value that is not expected, then the subsequent program logic could lead to a vulnerability, because the product is not in a state that the programmer assumes. For example, if the program calls a function to drop privileges but does not check the return code to ensure that privileges were successfully dropped, then the program will continue to operate with the higher privileges. Consequences: Availability Integrity Unexpected State DoS: Crash, Exit, or Restart An unexpected return value could place the system in a state that could lead to a crash or other unintended behaviors. Mitigations: Implementation Check the results of all functions that return a value and verify that the value is expected. High Checking the return value of the function will typically be sufficient, however beware of race conditions (CWE-362) in a concurrent environment. Implementation For any pointers that could have been modified or provided from a function that can return NULL, check the pointer for NULL before use.",
+    "url": "https://cwe.mitre.org/data/definitions/252.html"
+  },
+  {
+    "id": "CWE-252_1",
+    "source": "CWE",
+    "cwe_id": "CWE-252",
+    "title": "Unchecked Return Value",
+    "text": "When working with a multithreaded or otherwise asynchronous environment, ensure that proper locking APIs are used to lock before the check, and unlock when it has finished [REF-1484]. Implementation Ensure that you account for all possible return values from the function. Implementation When designing a function, make sure you return a value or throw an exception in case of an error. Detection Methods: Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/252.html"
+  }
+]

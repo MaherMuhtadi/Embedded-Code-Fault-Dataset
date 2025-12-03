@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-469_0",
+    "source": "CWE",
+    "cwe_id": "CWE-469",
+    "title": "Use of Pointer Subtraction to Determine Size",
+    "text": "Description: The product subtracts one pointer from another in order to determine size, but this calculation can be incorrect if the pointers do not exist in the same memory chunk. Consequences: Access Control Integrity Confidentiality Availability Modify Memory Read Memory Execute Unauthorized Code or Commands Gain Privileges or Assume Identity There is the potential for arbitrary code execution with privileges of the vulnerable program. Mitigations: Implementation Save an index variable. This is the recommended solution. Rather than subtract pointers from one another, use an index variable of the same size as the pointers in question. Use this variable to \"walk\" from one pointer to the other and calculate the difference. Always validate this number. Detection Methods: Fuzzing Fuzz testing (fuzzing) is a powerful technique for generating large numbers of diverse inputs - either randomly or algorithmically - and dynamically invoking the code with those inputs. Even with random inputs, it is often capable of generating unexpected results such as crashes, memory corruption, or resource consumption. Fuzzing effectively produces repeatable test cases that clearly indicate bugs, which helps developers to diagnose the issues. High Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it.",
+    "url": "https://cwe.mitre.org/data/definitions/469.html"
+  },
+  {
+    "id": "CWE-469_1",
+    "source": "CWE",
+    "cwe_id": "CWE-469",
+    "title": "Use of Pointer Subtraction to Determine Size",
+    "text": "Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/469.html"
+  }
+]

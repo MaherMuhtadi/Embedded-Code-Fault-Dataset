@@ -1,0 +1,50 @@
+[
+  {
+    "id": "FLP34-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP34-C",
+    "title": "Ensure that floating-point conversions are within range",
+    "kind": "description",
+    "text": "of the new type If a floating-point value is to be converted to a floating-point value of a smaller range and preci- sion or to an integer type, or if an integer type is to be converted to a floating-point type, the value must be representable in the destination type. The C Standard, 6.3.1.4, paragraph 1 [ISO/IEC 9899:2011], says, When a finite value of real floating type is converted to an integer type other than , _Bool the fractional part is discarded (i.e., the value is truncated toward zero). If the value of the integral part cannot be represented by the integer type, the behavior is undefined. Paragraph 2 of the same subclause says, When a value of integer type is converted to a real floating type, if the value being con- verted can be represented exactly in the new type, it is unchanged. If the value being converted is in the range of values that can be represented but cannot be represented exactly, the result is either the nearest higher or nearest lower representable value, cho- sen in an implementation-defined manner. If the value being converted is outside the range of values that can be represented, the behavior is undefined. And subclause 6.3.1.5, paragraph 1, says, When a value of real floating type is converted to a real floating type, if the value being converted can be represented exactly in the new type, it is unchanged."
+  },
+  {
+    "id": "FLP34-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP34-C",
+    "title": "Ensure that floating-point conversions are within range",
+    "kind": "description",
+    "text": "If the value being converted is in the range of values that can be represented but cannot be represented exactly, the result is either the nearest higher or nearest lower representable value, cho- sen in an implementation-defined manner. If the value being converted is outside the range of values that can be represented, the behavior is undefined. See undefined behaviors 17 and 18. This rule does not apply to demotions of floating-point types on implementations that support signed infinity, such as IEEE 754, as all values are within range. 6.3.1"
+  },
+  {
+    "id": "FLP34-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP34-C",
+    "file_path": "rules/flp/34/c0.c",
+    "kind": "compliant",
+    "text": "// FLP34-C: Compliant Solution (float to int)\n#include <float.h>\n#include <limits.h>\n#include <math.h>\n#include <stddef.h>\n#include <stdint.h>\n  \nextern size_t popcount(uintmax_t); /* See INT35-C */\n#define PRECISION(umax_value) popcount(umax_value)\n  \nvoid func(float f_a) {\n  int i_a;\n  \n  if (isnan(f_a) ||\n      PRECISION(INT_MAX) < log2f(fabsf(f_a)) ||\n      (f_a != 0.0F && fabsf(f_a) < FLT_MIN)) {\n    /* Handle error */\n  } else {\n    i_a = f_a;\n  }\n}\n"
+  },
+  {
+    "id": "FLP34-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP34-C",
+    "file_path": "rules/flp/34/c1.c",
+    "kind": "compliant",
+    "text": "// FLP34-C: Compliant Solution (Narrowing Conversion)\n#include <float.h>\n#include <math.h>\n  \nvoid func(double d_a, long double big_d) {\n  double d_b;\n  float f_a;\n  float f_b;\n \n  if (d_a != 0.0 &&\n      (isnan(d_a) ||\n       isgreater(fabs(d_a), FLT_MAX) ||\n       isless(fabs(d_a), FLT_MIN))) {\n    /* Handle error */\n  } else {\n    f_a = (float)d_a;\n  }\n  if (big_d != 0.0 &&\n      (isnan(big_d) ||\n       isgreater(fabs(big_d), FLT_MAX) ||\n       isless(fabs(big_d), FLT_MIN))) {\n    /* Handle error */\n  } else {\n    f_b = (float)big_d;\n  }\n  if (big_d != 0.0 &&\n      (isnan(big_d) ||\n       isgreater(fabs(big_d), DBL_MAX) ||\n       isless(fabs(big_d), DBL_MIN))) {\n    /* Handle error */\n  } else {\n    d_b = (double)big_d;\n  } \n}\n"
+  },
+  {
+    "id": "FLP34-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP34-C",
+    "file_path": "rules/flp/34/nc0.c",
+    "kind": "noncompliant",
+    "text": "// FLP34-C: Noncompliant Code Example (float to int)\nvoid func(float f_a) {\n  int i_a;\n  \n  /* Undefined if the integral part of f_a cannot be represented. */\n  i_a = f_a;\n}\n"
+  },
+  {
+    "id": "FLP34-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP34-C",
+    "file_path": "rules/flp/34/nc1.c",
+    "kind": "noncompliant",
+    "text": "// FLP34-C: Noncompliant Code Example (Narrowing Conversion)\nvoid func(double d_a, long double big_d) {\n  double d_b = (float)big_d;\n  float f_a = (float)d_a;\n  float f_b = (float)big_d;\n}\n"
+  }
+]

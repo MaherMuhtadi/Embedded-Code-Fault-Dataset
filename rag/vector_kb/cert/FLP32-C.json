@@ -1,0 +1,130 @@
+[
+  {
+    "id": "FLP32-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "functions The C Standard, 7.12.1 [ISO/IEC 9899:2011], defines three types of errors that relate specifically to math functions in . Paragraph 2 states <math.h> A domain error occurs if an input argument is outside the domain over which the mathe- matical function is defined. Paragraph 3 states A pole error (also known as a singularity or infinitary) occurs if the mathematical function has an exact infinite result as the finite input argument(s) are approached in the limit. Paragraph 4 states A range error occurs if the mathematical result of the function cannot be represented in an object of the specified type, due to extreme magnitude. An example of a domain error is the square root of a negative number, such as , sqrt(-1.0) which has no meaning in real arithmetic. Contrastingly, 10 raised to the 1-millionth power, , cannot be represented in many floating-point implementations because of the pow(10., 1e6) limited range of the type and consequently constitutes a range error. In both cases, the double function will return some value, but the value returned is not the correct result of the computation. An example of a pole error is , which results in negative infinity. log(0.0) Programmers can prevent domain and pole errors by carefully bounds-checking the arguments be- fore calling mathematical functions and taking alternative action if the bounds are violated."
+  },
+  {
+    "id": "FLP32-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "Range errors usually cannot be prevented because they are dependent on the implementation of floating-point numbers as well as on the function being applied. Instead of preventing range er- rors, programmers should attempt to detect them and take alternative action if a range error oc- curs. The following table lists the forms of standard mathematical functions, along with checks double that should be performed to ensure a proper input domain, and indicates whether they can also re- sult in range or pole errors, as reported by the C Standard. Both and forms float long double of these functions also exist but are omitted from the table for brevity. If a function has a specific domain over which it is defined, the programmer must check its input values. The programmer must also check for range errors where they might occur. The standard math functions not listed in this table, such as , have no domain restrictions and cannot result in range or pole er- fabs() rors. SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 176 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Floating Point (FLP) - FLP32-C."
+  },
+  {
+    "id": "FLP32-C_pdf_2",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "Prevent or detect domain and range errors in math functions Function Domain Range Pole No No acos(x) -1 <= x && x <= 1 Yes No asin(x) -1 <= x && x <= 1 None Yes No atan(x) No No atan2(y, x) x != 0 && y != 0 Yes No acosh(x) x >= 1 None Yes No asinh(x) Yes Yes atanh(x) -1 < x && x < 1 , None Yes No cosh(x) sinh(x) , , None Yes No exp(x) exp2(x) expm1(x) None Yes No ldexp(x, exp) , , No Yes log(x) log10(x) x >= 0 log2(x) No Yes log1p(x) x >= -1 Yes No ilogb(x) x != 0 && !isinf(x) && !isnan(x) Yes Yes logb(x) x != 0 , None Yes No scalbn(x, n) scalbln(x, n) None Yes No hypot(x, y) Yes Yes pow(x,y) x > 0 || (x == 0 && y > 0) || ( is an integer) x < 0 && y No No sqrt(x) x >= 0 None Yes No erf(x) None Yes No erfc(x) , ( is an integer) Yes Yes lgamma(x) x != 0 &&! x < 0 && x tgamma(x) , None Yes No lrint(x) lround(x) , Yes No fmod(x, y) y != 0 , remainder(x, y) remquo(x, y, quo) , None Yes No nextafter(x, y) nexttoward(x, y) None Yes No fdim(x,y) None Yes No fma(x,y,z) SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 177 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Floating Point (FLP) - FLP32-C."
+  },
+  {
+    "id": "FLP32-C_pdf_3",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "Prevent or detect domain and range errors in math functions 6.2.1 Domain and Pole Checking The most reliable way to handle domain and pole errors is to prevent them by checking arguments beforehand, as in the following exemplar: double safe_sqrt(double x) { if (x < 0) { fprintf(stderr, \"sqrt requires a nonnegative argument\"); /* Handle domain / pole error */ } return sqrt (x); } 6.2.2 Range Checking Programmers usually cannot prevent range errors, so the most reliable way to handle them is to detect when they have occurred and act accordingly. The exact treatment of error conditions from math functions is tedious. The C Standard, 7.12.1 [ISO/IEC 9899:2011], defines the following behavior for floating-point overflow: A floating result overflows if the magnitude of the mathematical result is finite but so large that the mathematical result cannot be represented without extraordinary roundoff error in an object of the specified type. If a floating result overflows and default rounding is in effect, then the function returns the value of the macro , , or HUGE_VAL HUGE_VALF according to the return type, with the same sign as the correct value of the HUGE_VALL function; if the integer expression is nonzero, the math_errhandling & MATH_ERRNO integer expression acquires the value ; if the integer expression errno ERANGE is nonzero, the “overflow” floating-point ex- math_errhandling & MATH_ERREXCEPT ception is raised."
+  },
+  {
+    "id": "FLP32-C_pdf_4",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "It is preferable not to check for errors by comparing the returned value against or for HUGE_VAL 0 several reasons: • These are, in general, valid (albeit unlikely) data values. • Making such tests requires detailed knowledge of the various error returns for each math function. • Multiple results aside from HUGE_VAL and 0 are possible, and programmers must know which are possible in each case. • Different versions of the library have varied in their error-return behavior. It can be unreliable to check for math errors using because an implementation might not errno set . For real functions, the programmer determines if the implementation sets by errno errno checking whether is nonzero. For complex functions, the math_errhandling & MATH_ERRNO SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 178 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Floating Point (FLP) - FLP32-C. Prevent or detect domain and range errors in math functions C Standard, 7.3.2, paragraph 1, simply states that “an implementation may set but is not errno required to” [ISO/IEC 9899:2011]. The obsolete System V Interface Definition (SVID3) [UNIX 1992] provides more control over the treatment of errors in the math library. The programmer can define a function named matherr() that is invoked if errors occur in a math function."
+  },
+  {
+    "id": "FLP32-C_pdf_5",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "This function can print diagnostics, terminate the execution, or specify the desired return value. The function has not been adopted matherr() by C or POSIX, so it is not generally portable. The following error-handing template uses C Standard functions for floating-point errors when the C macro is defined and indicates that they should be used; otherwise, it math_errhandling examines : errno #include <math.h> #include <fenv.h> #include <errno.h> /* ... */ /* Use to call a math function and check errors */ { #pragma STDC FENV_ACCESS ON if (math_errhandling & MATH_ERREXCEPT) { feclearexcept(FE_ALL_EXCEPT); } errno = 0; /* Call the math function */ if ((math_errhandling & MATH_ERRNO) && errno != 0) { /* Handle range error */ } else if ((math_errhandling & MATH_ERREXCEPT) && fetestexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW | FE_UNDERFLOW) != 0) { /* Handle range error */ } } See FLP03-C. Detect and handle floating-point errors for more details on how to detect floating- point errors. 6.2.3 Subnormal Numbers A subnormal number is a nonzero number that does not use all of its precision bits [IEEE 754 2006]. These numbers can be used to represent values that are closer to 0 than the smallest normal number (one that uses all of its precision bits)."
+  },
+  {
+    "id": "FLP32-C_pdf_6",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "However, the , , , asin() asinh() atan() , and functions may produce range errors, specifically when passed a subnormal atanh() erf() SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 179 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Floating Point (FLP) - FLP32-C. Prevent or detect domain and range errors in math functions number. When evaluated with a subnormal number, these functions can produce an inexact, sub- normal value, which is an underflow error. The C Standard, 7.12.1, paragraph 6 [ISO/IEC 9899:2011], defines the following behavior for floating-point underflow: The result underflows if the magnitude of the mathematical result is so small that the mathematical result cannot be represented, without extraordinary roundoff error, in an object of the specified type. If the result underflows, the function returns an implementa- tion-defined value whose magnitude is no greater than the smallest normalized positive number in the specified type; if the integer expression math_errhandling & is nonzero, whether acquires the value is implementa- MATH_ERRNO errno ERANGE tion-defined; if the integer expression & is non- math_errhandling MATH_ERREXCEPT zero, whether the ‘‘underflow’’ floating-point exception is raised is implementation-de- fined."
+  },
+  {
+    "id": "FLP32-C_pdf_7",
+    "source": "CERT_PDF",
+    "cert_rule": "FLP32-C",
+    "title": "Prevent or detect domain and range errors in math",
+    "kind": "description",
+    "text": "Implementations that support floating-point arithmetic but do not support subnormal numbers, such as IBM S/360 hex floating-point or nonconforming IEEE-754 implementations that skip sub- normals (or support them by flushing them to zero), can return a range error when calling one of the following families of functions with the following arguments: • fmod((min+subnorm), min) • remainder((min+subnorm), min) • remquo((min+subnorm), min, quo) where is the minimum value for the corresponding floating point type and is a sub- min subnorm normal value. If Annex F is supported and subnormal results are supported, the returned value is exact and a range error cannot occur. The C Standard, F.10.7.1 [ISO/IEC 9899:2011], specifies the following for the , , and functions: fmod() remainder() remquo() When subnormal results are supported, the returned value is exact and is independent of the current rounding direction mode. Annex F, subclause F.10.7.2, paragraph 2, and subclause F.10.7.3, paragraph 2, of the C Standard identify when subnormal results are supported. 6.2.4"
+  },
+  {
+    "id": "FLP32-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/c0.c",
+    "kind": "compliant",
+    "text": "// FLP32-C: Compliant Solution (sqrt())\n#include <math.h>\n  \nvoid func(double x) {\n  double result;\n \n  if (isless(x, 0.0)) {\n    /* Handle domain error */\n  }\n \n  result = sqrt(x);\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/c1.c",
+    "kind": "compliant",
+    "text": "// FLP32-C: Compliant Solution (sinh(), Range Errors)\n#include <math.h>\n#include <fenv.h>\n#include <errno.h>\n  \nvoid func(double x) { \n  double result;\n  {\n    #pragma STDC FENV_ACCESS ON\n    if (math_errhandling & MATH_ERREXCEPT) {\n      feclearexcept(FE_ALL_EXCEPT);\n    }\n    errno = 0;\n \n    result = sinh(x);\n \n    if ((math_errhandling & MATH_ERRNO) && errno != 0) {\n      /* Handle range error */\n    } else if ((math_errhandling & MATH_ERREXCEPT) &&\n               fetestexcept(FE_INVALID | FE_DIVBYZERO |\n                            FE_OVERFLOW | FE_UNDERFLOW) != 0) {\n      /* Handle range error */\n    }\n  }\n  \n  /* Use result... */\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/c2.c",
+    "kind": "compliant",
+    "text": "// FLP32-C: Compliant Solution (pow())\n#include <math.h>\n#include <fenv.h>\n#include <errno.h>\n  \nvoid func(double x, double y) {\n  double result;\n \n  if (((x == 0.0f) && islessequal(y, 0.0)) || isless(x, 0.0)) {\n    /* Handle domain or pole error */\n  }\n \n  {\n    #pragma STDC FENV_ACCESS ON\n    if (math_errhandling & MATH_ERREXCEPT) {\n      feclearexcept(FE_ALL_EXCEPT);\n    }\n    errno = 0;\n \n    result = pow(x, y);\n  \n    if ((math_errhandling & MATH_ERRNO) && errno != 0) {\n      /* Handle range error */\n    } else if ((math_errhandling & MATH_ERREXCEPT) &&\n               fetestexcept(FE_INVALID | FE_DIVBYZERO |\n                            FE_OVERFLOW | FE_UNDERFLOW) != 0) {\n      /* Handle range error */\n    }\n  }\n \n  /* Use result... */\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/c3.c",
+    "kind": "compliant",
+    "text": "#include <math.h>\n#include <fenv.h>\n#include <errno.h>\nvoid func(float x) {\n  float result;\n \n  {\n    #pragma STDC FENV_ACCESS ON\n    if (math_errhandling & MATH_ERREXCEPT) {\n      feclearexcept(FE_ALL_EXCEPT);\n    }\n    errno = 0;\n \n    result = asin(x);\n \n    if ((math_errhandling & MATH_ERRNO) && errno != 0) {\n      /* Handle range error */\n    } else if ((math_errhandling & MATH_ERREXCEPT) &&\n               fetestexcept(FE_INVALID | FE_DIVBYZERO |\n                            FE_OVERFLOW | FE_UNDERFLOW) != 0) {\n      /* Handle range error */\n    }\n  }\n \n  /* Use result... */\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/nc0.c",
+    "kind": "noncompliant",
+    "text": "// FLP32-C: Noncompliant Code Example (sqrt())\n#include <math.h>\n  \nvoid func(double x) {\n  double result;\n  result = sqrt(x);\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/nc1.c",
+    "kind": "noncompliant",
+    "text": "// FLP32-C: Noncompliant Code Example (sinh(), Range Errors)\n#include <math.h>\n  \nvoid func(double x) {\n  double result;\n  result = sinh(x);\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/nc2.c",
+    "kind": "noncompliant",
+    "text": "// FLP32-C: Noncompliant Code Example (pow())\n#include <math.h>\n  \nvoid func(double x, double y) {\n  double result;\n  result = pow(x, y);\n}\n"
+  },
+  {
+    "id": "FLP32-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "FLP32-C",
+    "file_path": "rules/flp/32/nc3.c",
+    "kind": "noncompliant",
+    "text": "#include <math.h>\n  \nvoid func(float x) {\n  float result = asin(x);\n  /* ... */\n}\n"
+  }
+]

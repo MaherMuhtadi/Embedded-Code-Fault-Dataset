@@ -1,0 +1,114 @@
+[
+  {
+    "id": "INT31-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "INT31-C",
+    "title": "Ensure that integer conversions do not result in lost or",
+    "kind": "description",
+    "text": "misinterpreted data Integer conversions, both implicit and explicit (using a cast), must be guaranteed not to result in lost or misinterpreted data. This rule is particularly true for integer values that originate from un- trusted sources and are used in any of the following ways: • Integer operands of any pointer arithmetic, including array indexing • The assignment expression for the declaration of a variable length array • The postfix expression preceding square brackets [] or the expression in square brackets [] of a subscripted designation of an element of an array object • Function arguments of type size_t or rsize_t (for example, an argument to a memory al- location function) This rule also applies to arguments passed to the following library functions that are converted to : unsigned char • memset() • memset_s() • fprintf() and related functions (For the length modifier c , if no l length modifier is pre- sent, the argument is converted to an , and the resulting character is int unsigned char written.) • fputc() • ungetc() • memchr() and to arguments to the following library functions that are converted to : char • strchr() • strrchr() • All of the functions listed in <ctype.h> The only integer type conversions that are guaranteed to be safe for all data values and all possible conforming implementations are conversions of an integral value to a wider type of the same sign- edness."
+  },
+  {
+    "id": "INT31-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "INT31-C",
+    "title": "Ensure that integer conversions do not result in lost or",
+    "kind": "description",
+    "text": "The C Standard, subclause 6.3.1.3 [ISO/IEC 9899:2011], says When a value with integer type is converted to another integer type other than , if _Bool the value can be represented by the new type, it is unchanged. Otherwise, if the new type is unsigned, the value is converted by repeatedly adding or subtracting one more than the maximum value that can be represented in the new type until the value is in the range of the new type. Otherwise, the new type is signed and the value cannot be represented in it; either the result is implementation-defined or an implementation-defined signal is raised. SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 138 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Integers (INT) - INT31-C. Ensure that integer conversions do not result in lost or misinterpreted data Typically, converting an integer to a smaller type results in truncation of the high-order bits. 5.2.1"
+  },
+  {
+    "id": "INT31-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c0.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (Unsigned to Signed)\n#include <limits.h>\n  \nvoid func(void) {\n  unsigned long int u_a = ULONG_MAX;\n  signed char sc;\n  if (u_a <= SCHAR_MAX) {\n    sc = (signed char)u_a;  /* Cast eliminates warning */\n  } else {\n    /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c1.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (Signed to Unsigned)\n#include <limits.h>\n \nvoid func(void) {\n  signed int si = INT_MIN;\n  unsigned int ui;\n  if (si < 0) {\n    /* Handle error */\n  } else {\n    ui = (unsigned int)si;  /* Cast eliminates warning */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c2.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (Signed, Loss of Precision)\n#include <limits.h>\n \nvoid func(void) {\n  signed long int s_a = LONG_MAX;\n  signed char sc;\n  if ((s_a < SCHAR_MIN) || (s_a > SCHAR_MAX)) {\n    /* Handle error */\n  } else {\n    sc = (signed char)s_a; /* Use cast to eliminate warning */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c3.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (Unsigned, Loss of Precision)\n#include <limits.h>\n \nvoid func(void) {\n  unsigned long int u_a = ULONG_MAX;\n  unsigned char uc;\n  if (u_a > UCHAR_MAX) {\n    /* Handle error */\n  } else {\n    uc = (unsigned char)u_a; /* Cast eliminates warning */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c4.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (time_t Return Value)\n#include <time.h>\n  \nvoid func(void) {\n  time_t now = time(NULL);\n  if (now != (time_t)-1) {\n    /* Continue processing */\n  }\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_c5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/c5.c",
+    "kind": "compliant",
+    "text": "// INT31-C: Compliant Solution (memset())\n#include <string.h>\n#include <stddef.h>\n \nint *init_memory(int *array, size_t n) {\n  return memset(array, 0, n); \n} \n"
+  },
+  {
+    "id": "INT31-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc0.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (Unsigned to Signed)\n#include <limits.h>\n  \nvoid func(void) {\n  unsigned long int u_a = ULONG_MAX;\n  signed char sc;\n  sc = (signed char)u_a; /* Cast eliminates warning */\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc1.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (Signed to Unsigned)\n#include <limits.h>\n \nvoid func(void) {\n  signed int si = INT_MIN;\n  /* Cast eliminates warning */\n  unsigned int ui = (unsigned int)si;\n \n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc2.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (Signed, Loss of Precision)\n#include <limits.h>\n \nvoid func(void) {\n  signed long int s_a = LONG_MAX;\n  signed char sc = (signed char)s_a; /* Cast eliminates warning */\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc3.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (Unsigned, Loss of Precision)\n#include <limits.h>\n \nvoid func(void) {\n  unsigned long int u_a = ULONG_MAX;\n  unsigned char uc = (unsigned char)u_a; /* Cast eliminates warning */\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc4.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (time_t Return Value)\n#include <time.h>\n  \nvoid func(void) {\n  time_t now = time(NULL);\n  if (now != -1) {\n    /* Continue processing */\n  }\n}\n"
+  },
+  {
+    "id": "INT31-C_samples_nc5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT31-C",
+    "file_path": "rules/int/31/nc5.c",
+    "kind": "noncompliant",
+    "text": "// INT31-C: Noncompliant Code Example (memset())\n#include <string.h>\n#include <stddef.h>\n  \nint *init_memory(int *array, size_t n) {\n  return memset(array, 4096, n); \n} \n"
+  }
+]

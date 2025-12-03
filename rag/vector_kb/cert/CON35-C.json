@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CON35-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "CON35-C",
+    "title": "Avoid deadlock by locking in a predefined order",
+    "kind": "description",
+    "text": "Mutexes are used to prevent multiple threads from causing a data race by accessing shared re- sources at the same time. Sometimes, when locking mutexes, multiple threads hold each other’s lock, and the program consequently deadlocks. Four conditions are required for deadlock to oc- cur: • Mutual exclusion • Hold and wait • No preemption • Circular wait Deadlock needs all four conditions, so preventing deadlock requires preventing any one of the four conditions. One simple solution is to lock the mutexes in a predefined order, which prevents circular wait. 14.6.1"
+  },
+  {
+    "id": "CON35-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON35-C",
+    "file_path": "rules/con/35/c0.c",
+    "kind": "compliant",
+    "text": "// CON35-C: Compliant Solution\n#include <stdlib.h>\n#include <threads.h>\n  \ntypedef struct {\n  int balance;\n  mtx_t balance_mutex;\n  \n  /* Should not change after initialization */\n  unsigned int id;\n} bank_account;\n \ntypedef struct {\n  bank_account *from;\n  bank_account *to;\n  int amount;\n} transaction;\n \nunsigned int global_id = 1;\n \nvoid create_bank_account(bank_account **ba,\n                         int initial_amount) {\n  bank_account *nba = (bank_account *)malloc(\n    sizeof(bank_account)\n  );\n  if (nba == NULL) {\n    /* Handle error */\n  }\n \n  nba->balance = initial_amount;\n  if (thrd_success\n      != mtx_init(&nba->balance_mutex, mtx_plain)) {\n    /* Handle error */\n  }\n \n  nba->id = global_id++;\n  *ba = nba;\n}\n \nint deposit(void *ptr) {\n  transaction *args = (transaction *)ptr;\n  int result = -1;\n  mtx_t *first;\n  mtx_t *second;\n \n  if (args->from->id == args->to->id) {\n    return -1; /* Indicate error */\n  }\n \n  /* Ensure proper ordering for locking */\n  if (args->from->id < args->to->id) {\n    first = &args->from->balance_mutex;\n    second = &args->to->balance_mutex;\n  } else {\n    first = &args->to->balance_mutex;\n    second = &args->from->balance_mutex;\n  }\n  if (thrd_success != mtx_lock(first)) {\n    /* Handle error */\n  }\n  if (thrd_success != mtx_lock(second)) {\n    /* Handle error */\n  }\n \n  /* Not enough balance to transfer */\n  if (args->from->balance >= args->amount) {\n    args->from->balance -= args->amount;\n    args->to->balance += args->amount;\n    result = 0;\n  }\n \n  if (thrd_success != mtx_unlock(second)) {\n    /* Handle error */\n  }\n  if (thrd_success != mtx_unlock(first)) {\n    /* Handle error */\n  }\n  free(ptr);\n  return result;\n} \n"
+  },
+  {
+    "id": "CON35-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON35-C",
+    "file_path": "rules/con/35/nc0.c",
+    "kind": "noncompliant",
+    "text": "// CON35-C: Noncompliant Code Example\n#include <stdlib.h>\n#include <threads.h>\n  \ntypedef struct {\n  int balance;\n  mtx_t balance_mutex;\n} bank_account;\n \ntypedef struct {\n  bank_account *from;\n  bank_account *to;\n  int amount;\n} transaction;\n \nvoid create_bank_account(bank_account **ba,\n                         int initial_amount) {\n  bank_account *nba = (bank_account *)malloc(\n    sizeof(bank_account)\n  );\n  if (nba == NULL) {\n    /* Handle error */\n  }\n \n  nba->balance = initial_amount;\n  if (thrd_success\n      != mtx_init(&nba->balance_mutex, mtx_plain)) {\n    /* Handle error */\n  }\n \n  *ba = nba;\n}\n \nint deposit(void *ptr) {\n  transaction *args = (transaction *)ptr;\n \n  if (thrd_success != mtx_lock(&args->from->balance_mutex)) {\n    /* Handle error */\n  }\n \n  /* Not enough balance to transfer */\n  if (args->from->balance < args->amount) {\n    if (thrd_success\n        != mtx_unlock(&args->from->balance_mutex)) {\n      /* Handle error */\n    }\n    return -1; /* Indicate error */\n  }\n  if (thrd_success != mtx_lock(&args->to->balance_mutex)) {\n    /* Handle error */\n  }\n \n  args->from->balance -= args->amount;\n  args->to->balance += args->amount;\n \n  if (thrd_success\n      != mtx_unlock(&args->from->balance_mutex)) {\n    /* Handle error */\n  }\n \n  if (thrd_success\n      != mtx_unlock(&args->to->balance_mutex)) {\n    /* Handle error */\n  }\n \n  free(ptr);\n  return 0;\n}\n \nint main(void) {\n  thrd_t thr1, thr2;\n  transaction *arg1;\n  transaction *arg2;\n  bank_account *ba1;\n  bank_account *ba2;\n \n  create_bank_account(&ba1, 1000);\n  create_bank_account(&ba2, 1000);\n \n  arg1 = (transaction *)malloc(sizeof(transaction));\n  if (arg1 == NULL) {\n    /* Handle error */\n  }\n  arg2 = (transaction *)malloc(sizeof(transaction));\n  if (arg2 == NULL) {\n    /* Handle error */\n  }\n  arg1->from = ba1;\n  arg1->to = ba2;\n  arg1->amount = 100;\n \n  arg2->from = ba2;\n  arg2->to = ba1;\n  arg2->amount = 100;\n \n  /* Perform the deposits */\n  if (thrd_success\n     != thrd_create(&thr1, deposit, (void *)arg1)) {\n    /* Handle error */\n  }\n  if (thrd_success\n      != thrd_create(&thr2, deposit, (void *)arg2)) {\n    /* Handle error */\n  }\n  return 0;\n} \n"
+  }
+]

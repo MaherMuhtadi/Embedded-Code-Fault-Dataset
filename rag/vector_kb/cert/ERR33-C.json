@@ -1,0 +1,186 @@
+[
+  {
+    "id": "ERR33-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "The majority of the standard library functions, including I/O functions and memory allocation functions, return either a valid value or a value of the correct return type that indicates an error (for example, −1 or a null pointer). Assuming that all calls to such functions will succeed and fail- ing to check the return value for an indication of an error is a dangerous practice that may lead to unexpected or undefined behavior when an error occurs. It is essential that programs detect and appropriately handle all errors in accordance with an error-handling policy, as discussed in ERR00-C. Adopt and implement a consistent and comprehensive error-handling policy. The successful completion or failure of each of the standard library functions listed in the follow- ing table shall be determined either by comparing the function’s return value with the value listed in the column labeled “Error Return” or by calling one of the library functions mentioned in the footnotes."
+  },
+  {
+    "id": "ERR33-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Standard Library Functions Function Successful Return Error Return Pointer to space aligned_alloc() NULL Nonzero asctime_s() 0 Nonzero at_quick_exit() 0 Nonzero atexit() 0 Pointer to matching element bsearch() NULL Pointer to matching element bsearch_s() NULL Converted wide character btowc() WEOF Number of bytes c16rtomb() (size_t)(-1) Number of bytes c32rtomb() (size_t)(-1) Pointer to space calloc() NULL Processor time clock() (clock_t)(-1) cnd_broadcast() thrd_success thrd_error or cnd_init() thrd_success thrd_nomem thrd_error cnd_signal() thrd_success thrd_error or cnd_timedwait() thrd_success thrd_timedout thrd_error cnd_wait() thrd_success thrd_error Nonzero ctime_s() 0 (negative) fclose() 0 EOF (negative) fflush() 0 EOF SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 386 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR33-C."
+  },
+  {
+    "id": "ERR33-C_pdf_2",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Detect and handle standard library errors Function Successful Return Error Return fgetc() Character read EOF6 Nonzero, fgetpos() 0 errno > 0 Pointer to string fgets() NULL fgetwc() Wide character read WEOF6 Pointer to stream fopen() NULL Nonzero fopen_s() 0 Number of characters Negative fprintf() (nonnegative) Number of characters Negative fprintf_s() (nonnegative) fputc() Character written EOF7 Nonnegative (negative) fputs() EOF Wide character written fputwc() WEOF Nonnegative (negative) fputws() EOF Elements read Elements read fread() Pointer to stream freopen() NULL Nonzero freopen_s() 0 Number of conversions (negative) fscanf() EOF (nonnegative) Number of conversions (negative) fscanf_s() EOF (nonnegative) Nonzero fseek() 0 Nonzero, fsetpos() 0 errno > 0 File position , ftell() −1L errno > 0 Number of wide characters Negative fwprintf() (nonnegative) Number of wide characters Negative fwprintf_s() (nonnegative) Elements written Elements written fwrite() Number of conversions (negative) fwscanf() EOF (nonnegative) Number of conversions (negative) fwscanf_s() EOF (nonnegative) getc() Character read EOF6 ______________________ 6 By calling ferror() and feof() 7 By calling ferror() SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 387 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR33-C."
+  },
+  {
+    "id": "ERR33-C_pdf_3",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Detect and handle standard library errors Function Successful Return Error Return getchar() Character read EOF6 Pointer to string getenv() NULL Pointer to string getenv_s() NULL Pointer to string gets_s() NULL Wide character read getwc() WEOF Wide character read getwchar() WEOF Pointer to broken-down time gmtime() NULL Pointer to broken-down time gmtime_s() NULL Pointer to broken-down time localtime() NULL Pointer to broken-down time localtime_s() NULL Pointer to space malloc() NULL Number of bytes mblen(), s != NULL −1 Number of bytes or status mbrlen(), s != NULL (size_t)(-1) Number of bytes or status , mbrtoc16() (size_t)(-1) errno == EILSEQ Number of bytes or status , mbrtoc32() (size_t)(-1) errno == EILSEQ Number of bytes or status , mbrtowc(), s != NULL (size_t)(-1) errno == EILSEQ Number of non-null elements , mbsrtowcs() (size_t)(-1) errno == EILSEQ Nonzero mbsrtowcs_s() 0 Number of non-null elements mbstowcs() (size_t)(-1) Nonzero mbstowcs_s() 0 Number of bytes mbtowc(), s != NULL −1 Pointer to located character memchr() NULL Calendar time mktime() (time_t)(-1) mtx_init() thrd_success thrd_error mtx_lock() thrd_success thrd_error or mtx_timedlock() thrd_success thrd_timedout thrd_error or mtx_trylock() thrd_success thrd_busy thrd_error mtx_unlock() thrd_success thrd_error Number of characters Negative printf_s() (nonnegative) Character written 7 putc() EOF SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 388 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution."
+  },
+  {
+    "id": "ERR33-C_pdf_4",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Error Handling (ERR) - ERR33-C."
+  },
+  {
+    "id": "ERR33-C_pdf_5",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Detect and handle standard library errors Function Successful Return Error Return Wide character written putwc() WEOF Nonzero raise() 0 Pointer to space realloc() NULL Nonzero remove() 0 Nonzero rename() 0 Pointer to string setlocale() NULL Nonzero setvbuf() 0 Number of conversions (negative) scanf() EOF (nonnegative) Number of conversions (negative) scanf_s() EOF (nonnegative) Pointer to previous function , signal() SIG_ERR errno > 0 Number of characters that Negative snprintf() would be written (nonnegative) Number of characters that Negative snprintf_s() would be written (nonnegative) Number of non-null characters Negative sprintf() written Number of non-null characters Negative sprintf_s() written Number of conversions (negative) sscanf() EOF (nonnegative) Number of conversions (negative) sscanf_s() EOF (nonnegative) Pointer to located character strchr() NULL Nonzero strerror_s() 0 Number of non-null characters strftime() 0 Pointer to located character strpbrk() NULL Pointer to located character strrchr() NULL Pointer to located string strstr() NULL Converted value , strtod() 0 errno == ERANGE Converted value , strtof() 0 errno == ERANGE Converted value or , strtoimax() INTMAX_MAX INTMAX_MIN errno == ERANGE Pointer to first character of a strtok() NULL token SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 389 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution."
+  },
+  {
+    "id": "ERR33-C_pdf_6",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Error Handling (ERR) - ERR33-C. Detect and handle standard library errors Function Successful Return Error Return Pointer to first character of a strtok_s() NULL token Converted value or , strtol() LONG_MAX LONG_MIN errno == ERANGE Converted value strtold() 0, errno == ERANGE Converted value or , strtoll() LLONG_MAX LLONG_MIN errno == ERANGE Converted value , strtoumax() UINTMAX_MAX errno == ERANGE Converted value , strtoul() ULONG_MAX errno == ERANGE Converted value , strtoull() ULLONG_MAX errno == ERANGE Length of transformed string strxfrm() >= n Number of non-null wide char- Negative swprintf() acters Number of non-null wide char- Negative swprintf_s() acters Number of conversions (negative) swscanf() EOF (nonnegative) Number of conversions (negative) swscanf_s() EOF (nonnegative) or thrd_create() thrd_success thrd_nomem thrd_error thrd_detach() thrd_success thrd_error thrd_join() thrd_success thrd_error Negative thrd_sleep() 0 Calendar time time() (time_t)(-1) Base timespec_get() 0 Pointer to stream tmpfile() NULL Nonzero tmpfile_s() 0 Non-null pointer tmpnam() NULL Nonzero tmpnam_s() 0 tss_create() thrd_success thrd_error Value of thread-specific stor- tss_get() 0 age tss_set() thrd_success thrd_error SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 390 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR33-C."
+  },
+  {
+    "id": "ERR33-C_pdf_7",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Detect and handle standard library errors Function Successful Return Error Return Character pushed back 8 ungetc() EOF Character pushed back ungetwc() WEOF Number of characters Negative vfprintf() (nonnegative) Number of characters Negative vfprintf_s() (nonnegative) Number of conversions (negative) vfscanf() EOF (nonnegative) Number of conversions (negative) vfscanf_s() EOF (nonnegative) Number of wide characters Negative vfwprintf() (nonnegative) Number of wide characters Negative vfwprintf_s() (nonnegative) Number of conversions (negative) vfwscanf() EOF (nonnegative) Number of conversions (negative) vfwscanf_s() EOF (nonnegative) Number of characters Negative vprintf_s() (nonnegative) Number of conversions (negative) vscanf() EOF (nonnegative) Number of conversions (negative) vscanf_s() EOF (nonnegative) Number of characters that Negative vsnprintf() would be written (nonnegative) Number of characters that Negative vsnprintf_s() would be written (nonnegative) Number of non-null characters Negative vsprintf() (nonnegative) Number of non-null characters Negative vsprintf_s() (nonnegative) ______________________ 8 The ungetc() function does not set the error indicator even when it fails, so it is not possible to check for errors reliably unless it is known that the argument is not equal to EOF."
+  },
+  {
+    "id": "ERR33-C_pdf_8",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "The C Standard [ISO/IEC 9899:2011] states that “one character of pushback is guaranteed,” so this should not be an issue if, at most, one character is ever pushed back before reading again. (See FIO13-C. Never push back anything other than one read char- acter.) SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 391 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR33-C."
+  },
+  {
+    "id": "ERR33-C_pdf_9",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Detect and handle standard library errors Function Successful Return Error Return Number of conversions (negative) vsscanf() EOF (nonnegative) Number of conversions (negative) vsscanf_s() EOF (nonnegative) Number of non-null wide char- Negative vswprintf() acters Number of non-null wide char- Negative vswprintf_s() acters Number of conversions (negative) vswscanf() EOF (nonnegative) Number of conversions (negative) vswscanf_s() EOF (nonnegative) Number of wide characters Negative vwprintf_s() (nonnegative) Number of conversions (negative) vwscanf() EOF (nonnegative) Number of conversions (negative) vwscanf_s() EOF (nonnegative) Number of bytes stored wcrtomb() (size_t)(-1) Pointer to located wide charac- wcschr() NULL ter Number of non-null wide char- wcsftime() 0 acters Pointer to located wide charac- wcspbrk() NULL ter Pointer to located wide charac- wcsrchr() NULL ter Number of non-null bytes , wcsrtombs() (size_t)(-1) errno == EILSEQ Nonzero wcsrtombs_s() 0 Pointer to located wide string wcsstr() NULL Converted value , wcstod() 0 errno == ERANGE Converted value , wcstof() 0 errno == ERANGE Converted value or , wcstoimax() INTMAX_MAX INTMAX_MIN errno == ERANGE Pointer to first wide character wcstok() NULL of a token SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 392 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution."
+  },
+  {
+    "id": "ERR33-C_pdf_10",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Error Handling (ERR) - ERR33-C. Detect and handle standard library errors Function Successful Return Error Return Pointer to first wide character wcstok_s() NULL of a token Converted value or , wcstol() LONG_MAX LONG_MIN errno == ERANGE Converted value , wcstold() 0 errno == ERANGE Converted value or , wcstoll() LLONG_MAX LLONG_MIN errno == ERANGE Number of non-null bytes wcstombs() (size_t)(-1) Nonzero wcstombs_s() 0 Converted value , wcstoumax() UINTMAX_MAX errno == ERANGE Converted value , wcstoul() ULONG_MAX errno == ERANGE Converted value , wcstoull() ULLONG_MAX errno == ERANGE Length of transformed wide wcsxfrm() >= n string Converted character wctob() EOF Number of bytes stored wctomb(), s != NULL −1 Number of bytes stored wctomb_s(), s != NULL −1 Valid argument to wctrans() 0 towctrans Valid argument to wctype() iswctype 0 Pointer to located wide charac- wmemchr() NULL ter Number of wide characters Negative wprintf_s() (nonnegative) Number of conversions (negative) wscanf() EOF (nonnegative) Number of conversions (negative) wscanf_s() EOF (nonnegative) Note: According to FIO35-C."
+  },
+  {
+    "id": "ERR33-C_pdf_11",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR33-C",
+    "title": "Detect and handle standard library errors",
+    "kind": "description",
+    "text": "Use feof() and ferror() to detect end-of-file and file errors when sizeof(int) == sizeof(char), callers should verify end-of-file and file errors for the functions in this table as follows: 1 By calling and ferror() feof() 2 By calling ferror() SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 393 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR33-C. Detect and handle standard library errors 13.3.1"
+  },
+  {
+    "id": "ERR33-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c0.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (setlocale())\n#include <locale.h>\n#include <stdlib.h>\n  \nint utf8_to_wcs(wchar_t *wcs, size_t n, const char *utf8,\n                size_t *size) {\n  if (NULL == size) {\n    return -1;\n  }\n  const char *save = setlocale(LC_CTYPE, \"en_US.UTF-8\");\n  if (NULL == save) {\n    return -1;\n  }\n \n  *size = mbstowcs(wcs, utf8, n);\n  if (NULL == setlocale(LC_CTYPE, save)) {\n    return -1;\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c1.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (calloc())\n#include <stdlib.h>\n#include <string.h>\n \nenum { SIG_DESC_SIZE = 32 };\n \ntypedef struct {\n  char sig_desc[SIG_DESC_SIZE];\n} signal_info;\n  \nvoid func(size_t num_of_records, size_t temp_num,\n          const char *tmp2, size_t tmp2_size_bytes) {\n  signal_info *start = (signal_info *)calloc(num_of_records,\n                                           sizeof(signal_info));\n  if (start == NULL) {\n    /* Handle allocation error */\n  } else if (tmp2 == NULL) {\n    /* Handle error */\n  } else if (temp_num > num_of_records) {\n    /* Handle error */\n  } else if (tmp2_size_bytes < SIG_DESC_SIZE) {\n    /* Handle error */\n  }\n \n  signal_info *point = start + temp_num - 1;\n  memcpy(point->sig_desc, tmp2, SIG_DESC_SIZE);\n  point->sig_desc[SIG_DESC_SIZE - 1] = '\\0';\n  /* ... */\n  free(start);\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c2.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (realloc())\n#include <stdlib.h>\n  \nvoid *p;\nvoid func(size_t new_size) {\n  void *q;\n \n  if (new_size == 0) {\n    /* Handle error */\n  }\n  \n  q = realloc(p, new_size);\n  if (q == NULL) {\n   /* Handle error */\n  } else {\n    p = q;\n  }\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c3.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (fseek())\n#include <stdio.h>\n  \nsize_t read_at(FILE *file, long offset,\n               void *buf, size_t nbytes) {\n  if (fseek(file, offset, SEEK_SET) != 0) {\n    /* Indicate error to caller */\n    return 0;\n  }\n  return fread(buf, 1, nbytes, file);\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c4.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (snprintf())\n#include <stdio.h>\n#include <string.h>\n  \nextern void log_message(const char *);\n \nvoid f(int i, int width, int prec) {\n  char buf[40];\n  int n;\n  n = snprintf(buf, sizeof(buf), \"i = %*.*i\", width, prec, i);\n  if (n < 0 || n >= sizeof(buf)) {\n    /* Handle snprintf() error */\n    strcpy(buf, \"unknown error\");\n  }\n  log_message(buf);\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_c5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/c5.c",
+    "kind": "compliant",
+    "text": "// ERR33-C: Compliant Solution (snprintf(null))\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n  \nextern void log_message(const char *);\n  \nvoid f(int i, int width, int prec) {\n  char buffer[20];\n  char *buf = buffer;\n  int n  = sizeof(buffer);\n  const char fmt[] = \"i = %*.*i\";\n \n  n = snprintf(buf, n, fmt, width, prec, i);\n  if (n < 0) {\n    /* Handle snprintf() error */\n    strcpy(buffer, \"unknown error\");\n    goto write_log;\n  }\n \n  if (n < sizeof(buffer)) {\n    goto write_log;\n  }\n \n  buf = (char *)malloc(n + 1);\n  if (NULL == buf) {\n    /* Handle malloc() error */\n    strcpy(buffer, \"unknown error\");\n    goto write_log;\n  }\n \n  n = snprintf(buf, n, fmt, width, prec, i);\n  if (n < 0) {\n    /* Handle snprintf() error */\n    strcpy(buffer, \"unknown error\");\n  }\n \nwrite_log:\n  log_message(buf);\n \n  if (buf != buffer) {\n    free(buf);\n  }\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/nc0.c",
+    "kind": "noncompliant",
+    "text": "// ERR33-C: Noncompliant Code Example (setlocale())\n#include <locale.h>\n#include <stdlib.h>\n  \nint utf8_to_wcs(wchar_t *wcs, size_t n, const char *utf8,\n                size_t *size) {\n  if (NULL == size) {\n    return -1;\n  }\n  setlocale(LC_CTYPE, \"en_US.UTF-8\");\n  *size = mbstowcs(wcs, utf8, n);\n  return 0;\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/nc1.c",
+    "kind": "noncompliant",
+    "text": "// ERR33-C: Noncompliant Code Example (calloc())\n#include <stdlib.h>\n#include <string.h>\n  \nenum { SIG_DESC_SIZE = 32 };\n \ntypedef struct {\n  char sig_desc[SIG_DESC_SIZE];\n} signal_info;\n  \nvoid func(size_t num_of_records, size_t temp_num,\n          const char *tmp2, size_t tmp2_size_bytes) {\n  signal_info *start = (signal_info *)calloc(num_of_records,\n                                          sizeof(signal_info));\n \n  if (tmp2 == NULL) {\n    /* Handle error */\n  } else if (temp_num > num_of_records) {\n    /* Handle error */\n  } else if (tmp2_size_bytes < SIG_DESC_SIZE) {\n    /* Handle error */\n  }\n \n  signal_info *point = start + temp_num - 1;\n  memcpy(point->sig_desc, tmp2, SIG_DESC_SIZE);\n  point->sig_desc[SIG_DESC_SIZE - 1] = '\\0';\n  /* ... */\n  free(start);\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/nc2.c",
+    "kind": "noncompliant",
+    "text": "// ERR33-C: Noncompliant Code Example (realloc())\n#include <stdlib.h>\n  \nvoid *p;\nvoid func(size_t new_size) {\n  if (new_size == 0) {\n    /* Handle error */\n  }\n  p = realloc(p, new_size);\n  if (p == NULL) {\n   /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/nc3.c",
+    "kind": "noncompliant",
+    "text": "// ERR33-C: Noncompliant Code Example (fseek())\n#include <stdio.h>\n  \nsize_t read_at(FILE *file, long offset,\n               void *buf, size_t nbytes) {\n  fseek(file, offset, SEEK_SET);\n  return fread(buf, 1, nbytes, file);\n}\n"
+  },
+  {
+    "id": "ERR33-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR33-C",
+    "file_path": "rules/err/33/nc4.c",
+    "kind": "noncompliant",
+    "text": "// ERR33-C: Noncompliant Code Example (snprintf())\n#include <stdio.h>\n  \nextern void log_message(const char *);\n \nvoid f(int i, int width, int prec) {\n  char buf[40];\n  snprintf(buf, sizeof(buf), \"i = %*.*i\", width, prec, i);\n  log_message(buf);\n  /* ... */\n}\n"
+  }
+]

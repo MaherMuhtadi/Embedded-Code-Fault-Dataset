@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-463_0",
+    "source": "CWE",
+    "cwe_id": "CWE-463",
+    "title": "Deletion of Data Structure Sentinel",
+    "text": "Description: The accidental deletion of a data-structure sentinel can cause serious programming logic problems. Extended Description: Often times data-structure sentinels are used to mark structure of the data structure. A common example of this is the null character at the end of strings. Another common example is linked lists which may contain a sentinel to mark the end of the list. It is dangerous to allow this type of control data to be easily accessible. Therefore, it is important to protect from the deletion or modification outside of some wrapper interface which provides safety. Consequences: Availability Other Other Generally this error will cause the data structure to not work properly. Authorization Other Other If a control character, such as NULL is removed, one may cause resource access control problems. Mitigations: Architecture and Design Use an abstraction library to abstract away risky APIs. Not a complete solution. Build and Compilation Compilation or Build Hardening Run or compile the software using features or extensions that automatically provide a protection mechanism that mitigates or eliminates buffer overflows. For example, certain compilers and extensions provide automatic buffer overflow detection mechanisms that are built into the compiled code. Examples include the Microsoft Visual Studio /GS flag, Fedora/Red Hat FORTIFY_SOURCE GCC flag, StackGuard, and ProPolice.",
+    "url": "https://cwe.mitre.org/data/definitions/463.html"
+  },
+  {
+    "id": "CWE-463_1",
+    "source": "CWE",
+    "cwe_id": "CWE-463",
+    "title": "Deletion of Data Structure Sentinel",
+    "text": "Defense in Depth This is not necessarily a complete solution, since these mechanisms can only detect certain types of overflows. In addition, an attack could still cause a denial of service, since the typical response is to exit the application. Operation Use OS-level preventative functionality. Not a complete solution.",
+    "url": "https://cwe.mitre.org/data/definitions/463.html"
+  }
+]

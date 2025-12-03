@@ -1,0 +1,90 @@
+[
+  {
+    "id": "INT30-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "INT30-C",
+    "title": "Ensure that unsigned integer operations do not wrap",
+    "kind": "description",
+    "text": "The C Standard, 6.2.5, paragraph 9 [ISO/IEC 9899:2011], states A computation involving unsigned operands can never overflow, because a result that cannot be represented by the resulting unsigned integer type is reduced modulo the number that is one greater than the largest value that can be represented by the result- ing type. This behavior is more informally called unsigned integer wrapping. Unsigned integer operations can wrap if the resulting value cannot be represented by the underlying representation of the inte- ger. The following table indicates which operators can result in wrapping: Operator Wrap Operator Wrap Operator Wrap Operator Wrap + Yes -= Yes << Yes < No - Yes *= Yes >> No > No * Yes /= No & No >= No / No %= No | No <= No % No <<= Yes ^ No == No ++ Yes >>= No ~ No != No -- Yes &= No ! No && No = No |= No un + No || No += Yes ^= No un - Yes ?: No The following sections examine specific operations that are susceptible to unsigned integer wrap. When operating on integer types with less precision than , integer promotions are applied. The int usual arithmetic conversions may also be applied to (implicitly) convert operands to equivalent types before arithmetic operations are performed. Programmers should understand integer conver- sion rules before trying to implement secure arithmetic operations. (See INT02-C."
+  },
+  {
+    "id": "INT30-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "INT30-C",
+    "title": "Ensure that unsigned integer operations do not wrap",
+    "kind": "description",
+    "text": "Understand in- teger conversion rules.) Integer values must not be allowed to wrap, especially if they are used in any of the following ways: • Integer operands of any pointer arithmetic, including array indexing • The assignment expression for the declaration of a variable length array • The postfix expression preceding square brackets [] or the expression in square brackets [] of a subscripted designation of an element of an array object SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 132 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Integers (INT) - INT30-C. Ensure that unsigned integer operations do not wrap • Function arguments of type size_t or rsize_t (for example, an argument to a memory al- location function) • In security-critical code The C Standard defines arithmetic on atomic integer types as read-modify-write operations with the same representation as regular integer types. As a result, wrapping of atomic unsigned integers is identical to regular unsigned integers and should also be prevented or detected. 5.1.1 Addition Addition is between two operands of arithmetic type or between a pointer to an object type and an integer type. This rule applies only to addition between two operands of arithmetic type. (See ARR37-C. Do not add or subtract an integer to a pointer to a non-array object and ARR30-C."
+  },
+  {
+    "id": "INT30-C_pdf_2",
+    "source": "CERT_PDF",
+    "cert_rule": "INT30-C",
+    "title": "Ensure that unsigned integer operations do not wrap",
+    "kind": "description",
+    "text": "Do not form or use out-of-bounds pointers or array subscripts.) Incrementing is equivalent to adding 1. 5.1.1.1"
+  },
+  {
+    "id": "INT30-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/c0.c",
+    "kind": "compliant",
+    "text": "// INT30-C: Compliant Solution (Precondition Test)\n#include <limits.h>\n  \nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int usum;\n  if (UINT_MAX - ui_a < ui_b) {\n    /* Handle error */\n  } else {\n    usum = ui_a + ui_b;\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/c1.c",
+    "kind": "compliant",
+    "text": "// INT30-C: Compliant Solution (Postcondition Test)\nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int usum = ui_a + ui_b;\n  if (usum < ui_a) {\n    /* Handle error */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/c2.c",
+    "kind": "compliant",
+    "text": "// INT30-C: Compliant Solution (Precondition Test)\nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int udiff;\n  if (ui_a < ui_b){\n    /* Handle error */\n  } else {\n    udiff = ui_a - ui_b;\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/c3.c",
+    "kind": "compliant",
+    "text": "// INT30-C: Compliant Solution (Postcondition Test)\nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int udiff = ui_a - ui_b;\n  if (udiff > ui_a) {\n    /* Handle error */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/c4.c",
+    "kind": "compliant",
+    "text": "// INT30-C: Compliant Solution\npen->num_vertices = _cairo_pen_vertices_needed(\n  gstate->tolerance, radius, &gstate->ctm\n);\n \nif (pen->num_vertices > SIZE_MAX / sizeof(cairo_pen_vertex_t)) {\n  /* Handle error */\n}\npen->vertices = malloc(\n  pen->num_vertices * sizeof(cairo_pen_vertex_t)\n);\n"
+  },
+  {
+    "id": "INT30-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/nc0.c",
+    "kind": "noncompliant",
+    "text": "// INT30-C: Noncompliant Code Example\nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int usum = ui_a + ui_b;\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/nc1.c",
+    "kind": "noncompliant",
+    "text": "// INT30-C: Noncompliant Code Example\nvoid func(unsigned int ui_a, unsigned int ui_b) {\n  unsigned int udiff = ui_a - ui_b;\n  /* ... */\n}\n"
+  },
+  {
+    "id": "INT30-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT30-C",
+    "file_path": "rules/int/30/nc2.c",
+    "kind": "noncompliant",
+    "text": "// INT30-C: Noncompliant Code Example\npen->num_vertices = _cairo_pen_vertices_needed(\n  gstate->tolerance, radius, &gstate->ctm\n);\npen->vertices = malloc(\n  pen->num_vertices * sizeof(cairo_pen_vertex_t)\n);\n"
+  }
+]

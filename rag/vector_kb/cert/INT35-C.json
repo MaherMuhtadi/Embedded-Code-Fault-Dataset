@@ -1,0 +1,42 @@
+[
+  {
+    "id": "INT35-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "INT35-C",
+    "title": "Use correct integer precisions",
+    "kind": "description",
+    "text": "Integer types in C have both a size and a precision. The size indicates the number of bytes used by an object and can be retrieved for any object or type using the operator. The precision of sizeof an integer type is the number of bits it uses to represent values, excluding any sign and padding bits. Padding bits contribute to the integer’s size, but not to its precision. Consequently, inferring the precision of an integer type from its size may result in too large a value, which can then lead to incorrect assumptions about the numeric range of these types. Programmers should use correct integer precisions in their code, and in particular, should not use the operator to compute sizeof the precision of an integer type on architectures that use padding bits or in strictly conforming (that is, portable) programs. 5.6.1"
+  },
+  {
+    "id": "INT35-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT35-C",
+    "file_path": "rules/int/35/c0.c",
+    "kind": "compliant",
+    "text": "// INT35-C: Compliant Solution\n#include <stddef.h>\n#include <stdint.h>\n  \n/* Returns the number of set bits */\nsize_t popcount(uintmax_t num) {\n  size_t precision = 0;\n  while (num != 0) {\n    if (num % 2 == 1) {\n      precision++;\n    }\n    num >>= 1;\n  }\n  return precision;\n}\n#define PRECISION(umax_value) popcount(umax_value)\n"
+  },
+  {
+    "id": "INT35-C_samples_c1-a.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT35-C",
+    "file_path": "rules/int/35/c1-a.c",
+    "kind": "compliant",
+    "text": "// INT35-C: Compliant Solution\n#define PRECISION(value)  _Generic(value, \\\n  unsigned char : 8, \\\n  unsigned short: 16, \\\n  unsigned int : 32, \\\n  unsigned long : 32, \\\n  unsigned long long : 64, \\\n  signed char : 7, \\\n  signed short : 15, \\\n  signed int : 31, \\\n  signed long : 31, \\\n  signed long long : 63)\n"
+  },
+  {
+    "id": "INT35-C_samples_c1-b.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT35-C",
+    "file_path": "rules/int/35/c1-b.c",
+    "kind": "compliant",
+    "text": "// INT35-C: Compliant Solution\n#include <stddef.h>\n#include <stdint.h>\n#include <limits.h>\nextern size_t popcount(uintmax_t);\n#define PRECISION(umax_value) popcount(umax_value) \nunsigned int pow2(unsigned int exp) {\n  if (exp >= PRECISION(UINT_MAX)) {\n    /* Handle error */\n  }\n  return 1 << exp;\n}\n"
+  },
+  {
+    "id": "INT35-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "INT35-C",
+    "file_path": "rules/int/35/nc0.c",
+    "kind": "noncompliant",
+    "text": "// INT35-C: Noncompliant Code Example\n#include <limits.h>\n  \nunsigned int pow2(unsigned int exp) {\n  if (exp >= sizeof(unsigned int) * CHAR_BIT) {\n    /* Handle error */\n  }\n  return 1 << exp;\n}\n"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ARR37-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "ARR37-C",
+    "title": "Do not add or subtract an integer to a pointer to a non-",
+    "kind": "description",
+    "text": "array object Pointer arithmetic must be performed only on pointers that reference elements of array objects. The C Standard, 6.5.6 [ISO/IEC 9899:2011], states the following about pointer arithmetic: When an expression that has integer type is added to or subtracted from a pointer, the result has the type of the pointer operand. If the pointer operand points to an element of an array object, and the array is large enough, the result points to an element offset from the original element such that the difference of the subscripts of the resulting and origi- nal array elements equals the integer expression. 7.4.1"
+  },
+  {
+    "id": "ARR37-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR37-C",
+    "file_path": "rules/arr/37/c0.c",
+    "kind": "compliant",
+    "text": "// ARR37-C: Compliant Solution\ntotal = numb->num_a + numb->num_b + numb->num_c;\n"
+  },
+  {
+    "id": "ARR37-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR37-C",
+    "file_path": "rules/arr/37/c1.c",
+    "kind": "compliant",
+    "text": "// ARR37-C: Compliant Solution\n#include <stddef.h>\n \nstruct numbers {\n  short a[3];\n};\n \nint sum_numbers(const short *numb, size_t dim) {\n  int total = 0;\n  for (size_t i = 0; i < dim; ++i) {\n    total += numb[i];\n  }\n \n  return total;\n}\n \nint main(void) {\n  struct numbers my_numbers = { .a[0]= 1, .a[1]= 2, .a[2]= 3};\n  sum_numbers(\n    my_numbers.a,\n    sizeof(my_numbers.a)/sizeof(my_numbers.a[0])\n  );\n  return 0;\n}\n"
+  },
+  {
+    "id": "ARR37-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ARR37-C",
+    "file_path": "rules/arr/37/nc0.c",
+    "kind": "noncompliant",
+    "text": "// ARR37-C: Noncompliant Code Example\nstruct numbers {\n  short num_a, num_b, num_c;\n};\n \nint sum_numbers(const struct numbers *numb){\n  int total = 0;\n  const short *numb_ptr;\n \n  for (numb_ptr = &numb->num_a;\n       numb_ptr <= &numb->num_c;\n       numb_ptr++) {\n    total += *(numb_ptr);\n  }\n \n  return total;\n}\n \nint main(void) {\n  struct numbers my_numbers = { 1, 2, 3 };\n  sum_numbers(&my_numbers);\n  return 0;\n}\n"
+  }
+]

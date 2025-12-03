@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-196_0",
+    "source": "CWE",
+    "cwe_id": "CWE-196",
+    "title": "Unsigned to Signed Conversion Error",
+    "text": "Description: The product uses an unsigned primitive and performs a cast to a signed primitive, which can produce an unexpected value if the value of the unsigned primitive can not be represented using a signed primitive. Extended Description: Although less frequent an issue than signed-to-unsigned conversion, unsigned-to-signed conversion can be the perfect precursor to dangerous buffer underwrite conditions that allow attackers to move down the stack where they otherwise might not have access in a normal buffer overflow condition. Buffer underwrites occur frequently when large unsigned values are cast to signed values, and then used as indexes into a buffer or for pointer arithmetic. Consequences: Availability DoS: Crash, Exit, or Restart Incorrect sign conversions generally lead to undefined behavior, and therefore crashes. Integrity Modify Memory If a poor cast lead to a buffer overflow or similar condition, data integrity may be affected. Integrity Confidentiality Availability Access Control Execute Unauthorized Code or Commands Bypass Protection Mechanism Improper signed-to-unsigned conversions without proper checking can sometimes trigger buffer overflows which can be used to execute arbitrary code. This is usually outside the scope of a program's implicit security policy. Mitigations: Requirements Choose a language which is not subject to these casting flaws. Architecture and Design Design object accessor functions to implicitly check values for valid sizes.",
+    "url": "https://cwe.mitre.org/data/definitions/196.html"
+  },
+  {
+    "id": "CWE-196_1",
+    "source": "CWE",
+    "cwe_id": "CWE-196",
+    "title": "Unsigned to Signed Conversion Error",
+    "text": "Ensure that all functions which will be used as a size are checked previous to use as a size. If the language permits, throw exceptions rather than using in-band errors. Implementation Error check the return values of all functions. Be aware of implicit casts made, and use unsigned variables for sizes if at all possible.",
+    "url": "https://cwe.mitre.org/data/definitions/196.html"
+  }
+]

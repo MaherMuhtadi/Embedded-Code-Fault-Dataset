@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-667_0",
+    "source": "CWE",
+    "cwe_id": "CWE-667",
+    "title": "Improper Locking",
+    "text": "Description: The product does not properly acquire or release a lock on a resource, leading to unexpected resource state changes and behaviors. Extended Description: Locking is a type of synchronization behavior that ensures that multiple independently-operating processes or threads do not interfere with each other when accessing the same resource. All processes/threads are expected to follow the same steps for locking. If these steps are not followed precisely - or if no locking is done at all - then another process/thread could modify the shared resource in a way that is not visible or predictable to the original process. This can lead to data or memory corruption, denial of service, etc. Consequences: Availability DoS: Resource Consumption (CPU) Inconsistent locking discipline can lead to deadlock. Mitigations: Implementation Libraries or Frameworks Use industry standard APIs to implement locking mechanism. Detection Methods: Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/667.html"
+  }
+]

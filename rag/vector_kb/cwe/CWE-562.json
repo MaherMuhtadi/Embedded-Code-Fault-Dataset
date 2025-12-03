@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-562_0",
+    "source": "CWE",
+    "cwe_id": "CWE-562",
+    "title": "Return of Stack Variable Address",
+    "text": "Description: A function returns the address of a stack variable, which will cause unintended program behavior, typically in the form of a crash. Extended Description: Because local variables are allocated on the stack, when a program returns a pointer to a local variable, it is returning a stack address. A subsequent function call is likely to re-use this same stack address, thereby overwriting the value of the pointer, which no longer corresponds to the same variable since a function's stack frame is invalidated when it returns. At best this will cause the value of the pointer to change unexpectedly. In many cases it causes the program to crash the next time the pointer is dereferenced. Consequences: Availability Integrity Confidentiality Read Memory Modify Memory Execute Unauthorized Code or Commands DoS: Crash, Exit, or Restart If the returned stack buffer address is dereferenced after the return, then an attacker may be able to modify or read memory, depending on how the address is used. If the address is used for reading, then the address itself may be exposed, or the contents that the address points to. If the address is used for writing, this can lead to a crash and possibly code execution. Mitigations: Testing Use static analysis tools to spot return of the address of a stack variable.",
+    "url": "https://cwe.mitre.org/data/definitions/562.html"
+  },
+  {
+    "id": "CWE-562_1",
+    "source": "CWE",
+    "cwe_id": "CWE-562",
+    "title": "Return of Stack Variable Address",
+    "text": "Detection Methods: Fuzzing Fuzz testing (fuzzing) is a powerful technique for generating large numbers of diverse inputs - either randomly or algorithmically - and dynamically invoking the code with those inputs. Even with random inputs, it is often capable of generating unexpected results such as crashes, memory corruption, or resource consumption. Fuzzing effectively produces repeatable test cases that clearly indicate bugs, which helps developers to diagnose the issues. High Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/562.html"
+  }
+]

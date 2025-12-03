@@ -1,0 +1,308 @@
+[
+  {
+    "Toyota ITC Defect Sub-type": "Bit shift bigger than integral type or negative",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-1335"],
+    "SEI CERT C Rules": ["INT34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Dynamic buffer overrun",
+    "Toyota ITC Defect Type": "Dynamic memory defects",
+    "CWE IDs": ["CWE-122"],
+    "SEI CERT C Rules": ["ARR30-C", "MEM35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Dynamic buffer underrun",
+    "Toyota ITC Defect Type": "Dynamic memory defects",
+    "CWE IDs": ["CWE-786"],
+    "SEI CERT C Rules": ["ARR30-C", "MEM35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Comparison NULL with function pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-480"],
+    "SEI CERT C Rules": ["EXP34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Contradict conditions",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-570", "CWE-571"],
+    "SEI CERT C Rules": ["MSC12-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Integer precision lost because of cast",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-681"],
+    "SEI CERT C Rules": ["INT31-C", "INT35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Data overflow",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-190"],
+    "SEI CERT C Rules": ["INT30-C", "INT32-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Data underflow",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-191"],
+    "SEI CERT C Rules": ["INT30-C", "INT32-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Dead code",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-561"],
+    "SEI CERT C Rules": ["MSC07-C", "MSC12-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Dead lock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-833"],
+    "SEI CERT C Rules": ["CON35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Deletion of data structure sentinel",
+    "Toyota ITC Defect Type": "Dynamic memory defects",
+    "CWE IDs": ["CWE-463"],
+    "SEI CERT C Rules": ["ARR30-C", "STR31-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Double free",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-415"],
+    "SEI CERT C Rules": ["MEM30-C", "MEM31-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Double lock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-667"],
+    "SEI CERT C Rules": ["CON35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Double release",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-667", "CWE-675"],
+    "SEI CERT C Rules": ["CON35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Unintentional endless loop",
+    "Toyota ITC Defect Type": "Misc defects",
+    "CWE IDs": ["CWE-835"],
+    "SEI CERT C Rules": ["MSC12-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Free non dynamically allocated memory",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-590"],
+    "SEI CERT C Rules": ["MEM34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Free NULL pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-476"],
+    "SEI CERT C Rules": ["MEM34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Bad cast of a function pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-843"],
+    "SEI CERT C Rules": ["EXP36-C", "EXP37-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Return value of function never checked",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-252"],
+    "SEI CERT C Rules": ["ERR33-C", "EXP20-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Improper error handling",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-703"],
+    "SEI CERT C Rules": ["ERR30-C", "ERR33-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Improper termination of block",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-484"],
+    "SEI CERT C Rules": ["MSC12-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Useless assignment",
+    "Toyota ITC Defect Type": "Misc defects",
+    "CWE IDs": ["CWE-563"],
+    "SEI CERT C Rules": ["MSC12-C", "MSC13-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Bad extern type for global variable",
+    "Toyota ITC Defect Type": "Misc defects",
+    "CWE IDs": ["CWE-843"],
+    "SEI CERT C Rules": ["DCL40-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Invalid memory access to already freed area",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-416"],
+    "SEI CERT C Rules": ["MEM30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Assign small buffer for structure",
+    "Toyota ITC Defect Type": "Dynamic memory defects",
+    "CWE IDs": ["CWE-131", "CWE-122"],
+    "SEI CERT C Rules": ["MEM35-C", "ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Live lock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-764", "CWE-190"],
+    "SEI CERT C Rules": ["CON38-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Locked but never unlock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-843", "CWE-667"],
+    "SEI CERT C Rules": ["CON35-C", "CON38-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Memory allocation failure",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-121", "CWE-825", "CWE-835"],
+    "SEI CERT C Rules": ["MEM35-C", "ERR33-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Memory leakage",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-401", "CWE-476", "CWE-561"],
+    "SEI CERT C Rules": ["MEM31-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Non void function does not return value",
+    "Toyota ITC Defect Type": "Misc defects",
+    "CWE IDs": ["CWE-393"],
+    "SEI CERT C Rules": ["MSC37-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Dereferencing a NULL pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-476", "CWE-824"],
+    "SEI CERT C Rules": ["EXP34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Static buffer overrun",
+    "Toyota ITC Defect Type": "Static memory defects",
+    "CWE IDs": ["CWE-121"],
+    "SEI CERT C Rules": ["ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Memory copy at overlapping areas",
+    "Toyota ITC Defect Type": "Dynamic memory defects",
+    "CWE IDs": ["CWE-1260"],
+    "SEI CERT C Rules": ["MEM35-C", "ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Power related errors",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-476", "CWE-189"],
+    "SEI CERT C Rules": ["FLP32-C", "FLP34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Incorrect pointer arithmetic",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-469", "CWE-465"],
+    "SEI CERT C Rules": ["ARR36-C", "ARR37-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Race condition",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-362"],
+    "SEI CERT C Rules": ["CON33-C", "CON43-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Redundant conditions",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-398"],
+    "SEI CERT C Rules": ["MSC12-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Return of a pointer to a local variable",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-562"],
+    "SEI CERT C Rules": ["DCL30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Integer sign lost because of unsigned cast",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-196"],
+    "SEI CERT C Rules": ["INT31-C", "INT35-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Long lock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-667"],
+    "SEI CERT C Rules": ["CON35-C", "CON38-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Cross thread stack access",
+    "Toyota ITC Defect Type": "Stack related defects",
+    "CWE IDs": ["CWE-416"],
+    "SEI CERT C Rules": ["CON34-C", "DCL30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Stack overflow",
+    "Toyota ITC Defect Type": "Stack related defects",
+    "CWE IDs": ["CWE-121"],
+    "SEI CERT C Rules": ["MEM35-C", "ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Stack underrun",
+    "Toyota ITC Defect Type": "Stack related defects",
+    "CWE IDs": ["CWE-786"],
+    "SEI CERT C Rules": ["ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Static buffer underrun",
+    "Toyota ITC Defect Type": "Static memory defects",
+    "CWE IDs": ["CWE-786"],
+    "SEI CERT C Rules": ["ARR30-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Uninitialized memory access",
+    "Toyota ITC Defect Type": "Resource management defects",
+    "CWE IDs": ["CWE-908"],
+    "SEI CERT C Rules": ["EXP33-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Uninitialized pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-824"],
+    "SEI CERT C Rules": ["EXP33-C", "EXP34-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Uninitialized variable",
+    "Toyota ITC Defect Type": "Misc defects",
+    "CWE IDs": ["CWE-457"],
+    "SEI CERT C Rules": ["EXP33-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Unlock without lock",
+    "Toyota ITC Defect Type": "Concurrency defects",
+    "CWE IDs": ["CWE-765"],
+    "SEI CERT C Rules": ["CON35-C", "CON38-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Unused variable",
+    "Toyota ITC Defect Type": "Inappropriate code",
+    "CWE IDs": ["CWE-563"],
+    "SEI CERT C Rules": ["MSC13-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Wrong arguments passed to a function pointer",
+    "Toyota ITC Defect Type": "Pointer related defects",
+    "CWE IDs": ["CWE-628"],
+    "SEI CERT C Rules": ["EXP37-C"]
+  },
+  {
+    "Toyota ITC Defect Sub-type": "Division by zero",
+    "Toyota ITC Defect Type": "Numerical defects",
+    "CWE IDs": ["CWE-369"],
+    "SEI CERT C Rules": ["INT33-C"]
+  }
+]

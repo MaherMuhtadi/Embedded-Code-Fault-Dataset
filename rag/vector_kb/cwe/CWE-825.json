@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-825_0",
+    "source": "CWE",
+    "cwe_id": "CWE-825",
+    "title": "Expired Pointer Dereference",
+    "text": "Description: The product dereferences a pointer that contains a location for memory that was previously valid, but is no longer valid. Extended Description: When a product releases memory, but it maintains a pointer to that memory, then the memory might be re-allocated at a later time. If the original pointer is accessed to read or write data, then this could cause the product to read or modify data that is in use by a different function or process. Depending on how the newly-allocated memory is used, this could lead to a denial of service, information exposure, or code execution. Consequences: Confidentiality Read Memory If the expired pointer is used in a read operation, an attacker might be able to control data read in by the application. Availability DoS: Crash, Exit, or Restart If the expired pointer references a memory location that is not accessible to the product, or points to a location that is \"malformed\" (such as NULL) or larger than expected by a read or write operation, then a crash may occur. Integrity Confidentiality Availability Execute Unauthorized Code or Commands If the expired pointer is used in a function call, or points to unexpected data in a write operation, then code execution may be possible. Mitigations: Architecture and Design Choose a language that provides automatic memory management. Implementation When freeing pointers, be sure to set them to NULL once they are freed.",
+    "url": "https://cwe.mitre.org/data/definitions/825.html"
+  },
+  {
+    "id": "CWE-825_1",
+    "source": "CWE",
+    "cwe_id": "CWE-825",
+    "title": "Expired Pointer Dereference",
+    "text": "However, the utilization of multiple or complex data structures may lower the usefulness of this strategy.",
+    "url": "https://cwe.mitre.org/data/definitions/825.html"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "MEM34-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "MEM34-C",
+    "title": "Only free memory allocated dynamically",
+    "kind": "description",
+    "text": "The C Standard, Annex J [ISO/IEC 9899:2011], states that the behavior of a program is undefined when The pointer argument to the or function does not match a pointer earlier free realloc returned by a memory management function, or the space has been deallocated by a call to or . free realloc See also undefined behavior 179. Freeing memory that is not allocated dynamically can result in heap corruption and other serious errors. Do not call on a pointer other than one returned by a standard memory allocation free() function, such as , , , or . malloc() calloc() realloc() aligned_alloc() A similar situation arises when is supplied a pointer to non-dynamically allocated realloc() memory. The function is used to resize a block of dynamic memory. If realloc() realloc() is supplied a pointer to memory not allocated by a standard memory allocation function, the be- havior is undefined. One consequence is that the program may terminate abnormally. This rule does not apply to null pointers. The C Standard guarantees that if is passed a free() null pointer, no action occurs. 9.4.1"
+  },
+  {
+    "id": "MEM34-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM34-C",
+    "file_path": "rules/mem/34/c0.c",
+    "kind": "compliant",
+    "text": "// MEM34-C: Compliant Solution\n#include <stdlib.h>\n#include <string.h>\n#include <stdio.h>\n  \nenum { MAX_ALLOCATION = 1000 };\n \nint main(int argc, const char *argv[]) {\n  char *c_str = NULL;\n  size_t len;\n \n  if (argc == 2) {\n    len = strlen(argv[1]) + 1;\n    if (len > MAX_ALLOCATION) {\n      /* Handle error */\n    }\n    c_str = (char *)malloc(len);\n    if (c_str == NULL) {\n      /* Handle error */\n    }\n    strcpy(c_str, argv[1]);\n  } else {\n    printf(\"%s\\n\", \"usage: $>a.exe [string]\");\n    return EXIT_FAILURE;\n  }\n  free(c_str);\n  return 0;\n}\n"
+  },
+  {
+    "id": "MEM34-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM34-C",
+    "file_path": "rules/mem/34/c1.c",
+    "kind": "compliant",
+    "text": "// MEM34-C: Compliant Solution (realloc())\n#include <stdlib.h>\n  \nenum { BUFSIZE = 256 };\n  \nvoid f(void) {\n  char *buf = (char *)malloc(BUFSIZE * sizeof(char));\n  char *p = (char *)realloc(buf, 2 * BUFSIZE);\n  if (p == NULL) {\n    /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "MEM34-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM34-C",
+    "file_path": "rules/mem/34/nc0.c",
+    "kind": "noncompliant",
+    "text": "// MEM34-C: Noncompliant Code Example\n#include <stdlib.h>\n#include <string.h>\n#include <stdio.h>\n  \nenum { MAX_ALLOCATION = 1000 };\n \nint main(int argc, const char *argv[]) {\n  char *c_str = NULL;\n  size_t len;\n \n  if (argc == 2) {\n    len = strlen(argv[1]) + 1;\n    if (len > MAX_ALLOCATION) {\n      /* Handle error */\n    }\n    c_str = (char *)malloc(len);\n    if (c_str == NULL) {\n      /* Handle error */\n    }\n    strcpy(c_str, argv[1]);\n  } else {\n    c_str = \"usage: $>a.exe [string]\";\n    printf(\"%s\\n\", c_str);\n  }\n  free(c_str);\n  return 0;\n}\n"
+  },
+  {
+    "id": "MEM34-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM34-C",
+    "file_path": "rules/mem/34/nc1.c",
+    "kind": "noncompliant",
+    "text": "// MEM34-C: Noncompliant Code Example (realloc())\n#include <stdlib.h>\n  \nenum { BUFSIZE = 256 };\n  \nvoid f(void) {\n  char buf[BUFSIZE];\n  char *p = (char *)realloc(buf, 2 * BUFSIZE);\n  if (p == NULL) {\n    /* Handle error */\n  }\n}\n"
+  }
+]

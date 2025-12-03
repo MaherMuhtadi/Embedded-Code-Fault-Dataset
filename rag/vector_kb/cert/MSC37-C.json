@@ -1,0 +1,50 @@
+[
+  {
+    "id": "MSC37-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "MSC37-C",
+    "title": "Ensure that control never reaches the end of a non-void",
+    "kind": "description",
+    "text": "function If control reaches the closing curly brace ( ) of a non- function without evaluating a } void return statement, using the return value of the function call is undefined behavior. (See undefined behav- ior 88.) 15.4.1"
+  },
+  {
+    "id": "MSC37-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MSC37-C",
+    "file_path": "rules/msc/37/c0.c",
+    "kind": "compliant",
+    "text": "// MSC37-C: Compliant Solution\n#include <string.h>\n#include <stdio.h>\n  \nint checkpass(const char *password) {\n  if (strcmp(password, \"pass\") == 0) {\n    return 1;\n  }\n  return 0;\n}\n \nvoid func(const char *userinput) {\n  if (checkpass(userinput)) {\n    printf(\"Success!\\n\");\n  }\n}\n"
+  },
+  {
+    "id": "MSC37-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MSC37-C",
+    "file_path": "rules/msc/37/c1.c",
+    "kind": "compliant",
+    "text": "// MSC37-C: Compliant Solution\n#include <stddef.h>\n  \nint getlen(const int *input, size_t maxlen, int delim,\n           size_t *result) {\n  if (result == NULL) {\n    return -1;\n  }\n  for (size_t i = 0; i < maxlen; ++i) {\n    if (input[i] == delim) {\n      *result = i;\n      return 0;\n    }\n  }\n  return -1;\n}\n \nvoid func(int userdata) {\n  size_t i;\n  int data[] = {1, 1, 1};\n  if (getlen(data, sizeof(data), 0, &i) != 0) {\n    /* Handle error */\n  } else {\n    data[i] = userdata;\n  }\n}\n"
+  },
+  {
+    "id": "MSC37-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MSC37-C",
+    "file_path": "rules/msc/37/nc0.c",
+    "kind": "noncompliant",
+    "text": "// MSC37-C: Noncompliant Code Example\n#include <string.h>\n#include <stdio.h>\n  \nint checkpass(const char *password) {\n  if (strcmp(password, \"pass\") == 0) {\n    return 1;\n  }\n}\n \nvoid func(const char *userinput) {\n  if (checkpass(userinput)) {\n    printf(\"Success\\n\");\n  }\n}\n"
+  },
+  {
+    "id": "MSC37-C_samples_nc1-a.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MSC37-C",
+    "file_path": "rules/msc/37/nc1-a.c",
+    "kind": "noncompliant",
+    "text": "// MSC37-C: Noncompliant Code Example\n#include <stddef.h>\n  \nsize_t getlen(const int *input, size_t maxlen, int delim) {\n  for (size_t i = 0; i < maxlen; ++i) {\n    if (input[i] == delim) {\n      return i;\n    }\n  }\n}\n  \nvoid func(int userdata) {\n  size_t i;\n  int data[] = { 1, 1, 1 };\n  i = getlen(data, sizeof(data), 0);\n  data[i] = userdata;\n}\n"
+  },
+  {
+    "id": "MSC37-C_samples_nc1-b.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MSC37-C",
+    "file_path": "rules/msc/37/nc1-b.c",
+    "kind": "noncompliant",
+    "text": "// MSC37-C: Noncompliant Code Example\n#include <stdio.h>\n \nsize_t getlen(const int *input, size_t maxlen, int delim) {\n  for (size_t i = 0; i < maxlen; ++i) {\n    if (input[i] == delim) {\n      return i;\n    }\n  }\n}\n \nint main(int argc, char **argv) {\n  size_t i;\n  int data[] = { 1, 1, 1 };\n \n  i = getlen(data, sizeof(data), 0);\n  printf(\"Returned: %zu\\n\", i);\n  data[i] = 0;\n \n  return 0;\n}\n"
+  }
+]

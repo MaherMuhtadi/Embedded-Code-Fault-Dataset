@@ -1,0 +1,50 @@
+[
+  {
+    "id": "CON38-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "CON38-C",
+    "title": "Preserve thread safety and liveness when using",
+    "kind": "description",
+    "text": "condition variables Both thread safety and liveness are concerns when using condition variables. The thread-safety property requires that all objects maintain consistent states in a multithreaded environment [Lea 2000]. The liveness property requires that every operation or function invocation execute to com- pletion without interruption; for example, there is no deadlock. Condition variables must be used inside a loop. (See CON36-C. Wrap functions that can while spuriously wake up in a loop for more information.) To guarantee liveness, programs must test the loop condition before invoking the function. This early test checks whether while cnd_wait() another thread has already satisfied the condition predicate and has sent a notification. Invoking the function after the notification has been sent results in indefinite blocking. cnd_wait() To guarantee thread safety, programs must test the loop condition after returning from the while function. When a given thread invokes the function, it will attempt to cnd_wait() cnd_wait() block until its condition variable is signaled by a call to or to cnd_broadcast() cnd_sig- . nal() The function unblocks one of the threads that are blocked on the specified condi- cnd_signal() tion variable at the time of the call. If multiple threads are waiting on the same condition variable, the scheduler can select any of those threads to be awakened (assuming that all threads have the same priority level)."
+  },
+  {
+    "id": "CON38-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "CON38-C",
+    "title": "Preserve thread safety and liveness when using",
+    "kind": "description",
+    "text": "The function unblocks all of the threads that are blocked cnd_broadcast() on the specified condition variable at the time of the call. The order in which threads execute fol- lowing a call to is unspecified. Consequently, an unrelated thread could start cnd_broadcast() executing, discover that its condition predicate is satisfied, and resume execution even though it was supposed to remain dormant. For these reasons, threads must check the condition predicate after the function returns. A loop is the best choice for checking the condi- cnd_wait() while tion predicate both before and after invoking . cnd_wait() The use of is safe if each thread uses a unique condition variable. If multiple cnd_signal() threads share a condition variable, the use of is safe only if the following condi- cnd_signal() tions are met: • All threads must perform the same set of operations after waking up, which means that any thread can be selected to wake up and resume for a single invocation of . cnd_signal() • Only one thread is required to wake upon receiving the signal. The function can be used to unblock all of the threads that are blocked on the cnd_broadcast() specified condition variable if the use of is unsafe. cnd_signal() 14.9.1"
+  },
+  {
+    "id": "CON38-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON38-C",
+    "file_path": "rules/con/38/c0.c",
+    "kind": "compliant",
+    "text": "// CON38-C: Compliant Solution (cnd_broadcast())\n#include <stdio.h>\n#include <threads.h>\n \nmtx_t mutex;\ncnd_t cond;\nint run_step(void *t) {\n  static size_t current_step = 0;\n  size_t my_step = *(size_t *)t;\n \n  if (thrd_success != mtx_lock(&mutex)) {\n    /* Handle error */\n  }\n \n  printf(\"Thread %zu has the lock\\n\", my_step);\n \n  while (current_step != my_step) {\n    printf(\"Thread %zu is sleeping...\\n\", my_step);\n \n    if (thrd_success != cnd_wait(&cond, &mutex)) {\n      /* Handle error */\n    }\n \n  printf(\"Thread %zu woke up\\n\", my_step);\n  }\n \n  /* Do processing ... */\n  printf(\"Thread %zu is processing...\\n\", my_step);\n \n  current_step++;\n \n  /* Signal ALL waiting tasks */\n  if (thrd_success != cnd_broadcast(&cond)) {\n    /* Handle error */\n  }\n \n  printf(\"Thread %zu is exiting...\\n\", my_step);\n \n  if (thrd_success != mtx_unlock(&mutex)) {\n    /* Handle error */\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON38-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON38-C",
+    "file_path": "rules/con/38/c1.c",
+    "kind": "compliant",
+    "text": "// CON38-C: Compliant Solution (Using cnd_signal() with a Unique Condition Variable per Thread)\n#include <stdio.h>\n#include <threads.h>\n \nenum { NTHREADS = 5 };\n \nmtx_t mutex;\ncnd_t cond[NTHREADS];\n \nint run_step(void *t) {\n  static size_t current_step = 0;\n  size_t my_step = *(size_t *)t;\n \n  if (thrd_success != mtx_lock(&mutex)) {\n    /* Handle error */\n  }\n \n  printf(\"Thread %zu has the lock\\n\", my_step);\n \n  while (current_step != my_step) {\n    printf(\"Thread %zu is sleeping...\\n\", my_step);\n \n    if (thrd_success != cnd_wait(&cond[my_step], &mutex)) {\n      /* Handle error */\n    }\n \n    printf(\"Thread %zu woke up\\n\", my_step);\n  }\n \n  /* Do processing ... */\n  printf(\"Thread %zu is processing...\\n\", my_step);\n \n  current_step++;\n \n  /* Signal next step thread */\n  if ((my_step + 1) < NTHREADS) {\n    if (thrd_success != cnd_signal(&cond[my_step + 1])) {\n      /* Handle error */\n    }\n  }\n \n  printf(\"Thread %zu is exiting...\\n\", my_step);\n \n  if (thrd_success != mtx_unlock(&mutex)) {\n    /* Handle error */\n  }\n  return 0;\n}\n \nint main(void) {\n  thrd_t threads[NTHREADS];\n  size_t step[NTHREADS];\n \n  if (thrd_success != mtx_init(&mutex, mtx_plain)) {\n    /* Handle error */\n  }\n \n  for (size_t i = 0; i< NTHREADS; ++i) {\n    if (thrd_success != cnd_init(&cond[i])) {\n      /* Handle error */\n    }\n  }\n \n  /* Create threads */\n  for (size_t i = 0; i < NTHREADS; ++i) {\n    step[i] = i;\n    if (thrd_success != thrd_create(&threads[i], run_step,\n                                    &step[i])) {\n      /* Handle error */\n    }\n  }\n \n  /* Wait for all threads to complete */\n  for (size_t i = NTHREADS; i != 0; --i) {\n    if (thrd_success != thrd_join(threads[i-1], NULL)) {\n      /* Handle error */\n    }\n  }\n \n  mtx_destroy(&mutex);\n \n  for (size_t i = 0; i < NTHREADS; ++i) {\n    cnd_destroy(&cond[i]);\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON38-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON38-C",
+    "file_path": "rules/con/38/c2.c",
+    "kind": "compliant",
+    "text": "// CON38-C: Compliant Solution (Windows, Condition Variables)\n#include <Windows.h>\n#include <stdio.h>\n  \nCRITICAL_SECTION lock;\nCONDITION_VARIABLE cond;\n  \nDWORD WINAPI run_step(LPVOID t) {\n  static size_t current_step = 0;\n  size_t my_step = (size_t)t;\n \n  EnterCriticalSection(&lock); \n  printf(\"Thread %zu has the lock\\n\", my_step);\n \n  while (current_step != my_step) {\n    printf(\"Thread %zu is sleeping...\\n\", my_step);\n  \n    if (!SleepConditionVariableCS(&cond, &lock, INFINITE)) {\n      /* Handle error */\n    }\n \n    printf(\"Thread %zu woke up\\n\", my_step);\n  }\n \n  /* Do processing ... */\n  printf(\"Thread %zu is processing...\\n\", my_step);\n \n  current_step++;\n  \n  LeaveCriticalSection(&lock);\n  \n  /* Signal ALL waiting tasks */\n  WakeAllConditionVariable(&cond);\n  \n  printf(\"Thread %zu is exiting...\\n\", my_step);\n  return 0;\n}\n  \nenum { NTHREADS = 5 };\n  \nint main(void) {\n  HANDLE threads[NTHREADS];\n   \n  InitializeCriticalSection(&lock);\n  InitializeConditionVariable(&cond);\n  \n  /* Create threads */\n  for (size_t i = 0; i < NTHREADS; ++i) {\n    threads[i] = CreateThread(NULL, 0, run_step, (LPVOID)i, 0, NULL);\n  }\n  \n  /* Wait for all threads to complete */\n  WaitForMultipleObjects(NTHREADS, threads, TRUE, INFINITE);\n  \n  DeleteCriticalSection(&lock);\n  \n  return 0;\n}\n"
+  },
+  {
+    "id": "CON38-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON38-C",
+    "file_path": "rules/con/38/nc0.c",
+    "kind": "noncompliant",
+    "text": "// CON38-C: Noncompliant Code Example (cnd_signal())\n#include <stdio.h>\n#include <threads.h>\n \nenum { NTHREADS = 5 };\n \nmtx_t mutex;\ncnd_t cond;\n \nint run_step(void *t) {\n  static size_t current_step = 0;\n  size_t my_step = *(size_t *)t;\n \n  if (thrd_success != mtx_lock(&mutex)) {\n    /* Handle error */\n  }\n \n  printf(\"Thread %zu has the lock\\n\", my_step);\n  while (current_step != my_step) {\n    printf(\"Thread %zu is sleeping...\\n\", my_step);\n \n    if (thrd_success != cnd_wait(&cond, &mutex)) {\n      /* Handle error */\n    }\n \n    printf(\"Thread %zu woke up\\n\", my_step);\n  }\n  /* Do processing ... */\n  printf(\"Thread %zu is processing...\\n\", my_step);\n  current_step++;\n \n  /* Signal awaiting task */\n  if (thrd_success != cnd_signal(&cond)) {\n    /* Handle error */\n  }\n \n  printf(\"Thread %zu is exiting...\\n\", my_step);\n \n  if (thrd_success != mtx_unlock(&mutex)) {\n    /* Handle error */\n  }\n  return 0;\n}\nint main(void) {\n  thrd_t threads[NTHREADS];\n  size_t step[NTHREADS];\n \n  if (thrd_success != mtx_init(&mutex, mtx_plain)) {\n    /* Handle error */\n  }\n \n  if (thrd_success != cnd_init(&cond)) {\n    /* Handle error */\n  }\n \n  /* Create threads */\n  for (size_t i = 0; i < NTHREADS; ++i) {\n    step[i] = i;\n \n    if (thrd_success != thrd_create(&threads[i], run_step,\n                                    &step[i])) {\n      /* Handle error */\n    }\n  }\n \n  /* Wait for all threads to complete */\n  for (size_t i = NTHREADS; i != 0; --i) {\n    if (thrd_success != thrd_join(threads[i-1], NULL)) {\n      /* Handle error */\n    }\n  }\n \n  mtx_destroy(&mutex);\n  cnd_destroy(&cond);\n  return 0;\n} \n"
+  }
+]

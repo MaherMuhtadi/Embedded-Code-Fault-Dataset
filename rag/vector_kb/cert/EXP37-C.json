@@ -1,0 +1,90 @@
+[
+  {
+    "id": "EXP37-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "EXP37-C",
+    "title": "Call functions with the correct number and type of",
+    "kind": "description",
+    "text": "arguments Do not call a function with the wrong number or type of arguments. The C Standard identifies five distinct situations in which undefined behavior (UB) may arise as a result of invoking a function using a declaration that is incompatible with its definition or by sup- plying incorrect types or numbers of arguments: UB Description 26 A pointer is used to call a function whose type is not compatible with the referenced type (6.3.2.3). 38 For a call to a function without a function prototype in scope, the number of arguments does not equal the number of parameters (6.5.2.2). 39 For a call to a function without a function prototype in scope where the function is defined with a function prototype, either the prototype ends with an ellipsis or the types of the argu- ments after promotion are not compatible with the types of the parameters (6.5.2.2). 40 For a call to a function without a function prototype in scope where the function is not de- fined with a function prototype, the types of the arguments after promotion are not compati- ble with those of the parameters after promotion (with certain exceptions) (6.5.2.2). 41 A function is defined with a type that is not compatible with the type (of the expression) pointed to by the expression that denotes the called function (6.5.2.2). Functions that are appropriately declared (as in DCL40-C."
+  },
+  {
+    "id": "EXP37-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "EXP37-C",
+    "title": "Call functions with the correct number and type of",
+    "kind": "description",
+    "text": "Do not create incompatible declara- tions of the same function or object) will typically generate a compiler diagnostic message if they are supplied with the wrong number or types of arguments. However, there are cases in which supplying the incorrect arguments to a function will, at best, generate compiler warnings. Alt- hough such warnings should be resolved, they do not prevent program compilation. (See MSC00- C. Compile cleanly at high warning levels.) 4.7.1"
+  },
+  {
+    "id": "EXP37-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/c0.c",
+    "kind": "compliant",
+    "text": "// EXP37-C: Compliant Solution (Complex Number)\n#include <tgmath.h>\n  \nvoid func(void) {\n  double complex c = 2.0 + 4.0 * I;\n  double complex result = log(c)/log(2);\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/c1.c",
+    "kind": "compliant",
+    "text": "// EXP37-C: Compliant Solution (Real Number)\n#include <tgmath.h>\n  \nvoid func(void) {\n  double complex c = 2.0 + 4.0 * I;\n  double complex result = log2(creal(c));\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/c2.c",
+    "kind": "compliant",
+    "text": "// EXP37-C: Compliant Solution\n#include <stdio.h>\n#include <string.h>\n \nchar *(*fp)(const char *, int);\n \nint main(void) {\n  const char *c;\n  fp = strchr;\n  c = fp(\"Hello\",'e');\n  printf(\"%s\\n\", c);\n  return 0;\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/c3.c",
+    "kind": "compliant",
+    "text": "// EXP37-C: Compliant Solution\n/* In another source file */\n  \nlong f(long x) {\n  return x < 0 ? -x : x;\n}\n \n/* f prototype in scope in this source file */\n \nlong f(long x);\n \nlong g(int x) {\n  return f((long)x); \n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/c4.c",
+    "kind": "compliant",
+    "text": "// EXP37-C: Compliant Solution (POSIX)\n#include <fcntl.h>\n  \nvoid func(const char *ms, mode_t perms) {\n  /* ... */\n  int fd;\n  fd = open(ms, O_CREAT | O_EXCL | O_WRONLY | O_TRUNC, perms);\n  if (fd == -1) {\n    /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/nc0.c",
+    "kind": "noncompliant",
+    "text": "// EXP37-C: Noncompliant Code Example\n#include <tgmath.h>\n  \nvoid func(void) {\n  double complex c = 2.0 + 4.0 * I;\n  double complex result = log2(c);\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/nc1.c",
+    "kind": "noncompliant",
+    "text": "// EXP37-C: Noncompliant Code Example\n#include <stdio.h>\n#include <string.h>\n \nchar *(*fp)();\n \nint main(void) {\n  const char *c;\n  fp = strchr;\n  c = fp('e', \"Hello\");\n  printf(\"%s\\n\", c);\n  return 0;\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/nc2.c",
+    "kind": "noncompliant",
+    "text": "// EXP37-C: Noncompliant Code Example\n/* In another source file */\nlong f(long x) {\n  return x < 0 ? -x : x;\n}\n \n/* In this source file, no f prototype in scope */\nlong f();\n  \nlong g(int x) {\n  return f(x);\n}\n"
+  },
+  {
+    "id": "EXP37-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP37-C",
+    "file_path": "rules/exp/37/nc3.c",
+    "kind": "noncompliant",
+    "text": "// EXP37-C: Noncompliant Code Example (POSIX)\nfd = open(ms, O_CREAT | O_EXCL | O_WRONLY | O_TRUNC);\n"
+  }
+]

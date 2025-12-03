@@ -1,0 +1,98 @@
+[
+  {
+    "id": "DCL40-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "DCL40-C",
+    "title": "Do not create incompatible declarations of the same",
+    "kind": "description",
+    "text": "function or object Two or more incompatible declarations of the same function or object must not appear in the same program because they result in undefined behavior. The C Standard, 6.2.7, mentions that two types may be distinct yet compatible and addresses precisely when two distinct types are compatible. The C Standard identifies four situations in which undefined behavior (UB) may arise as a result of incompatible declarations of the same function or object: UB Description Code 15 Two declarations of the same All noncompliant code in this object or function specify types guideline that are not compatible (6.2.7). 31 Two identifiers differ only in non- Excessively Long Identifiers significant characters (6.4.2.1). 37 An object has its stored value Incompatible Object Declarations accessed other than by an lvalue Incompatible Array Declarations of an allowable type (6.5). 41 A function is defined with a type Incompatible Function Declara- that is not compatible with the tions type (of the expression) pointed Excessively Long Identifiers to by the expression that de- notes the called function (6.5.2.2). Although the effect of two incompatible declarations simply appearing in the same program may be benign on most implementations, the effects of invoking a function through an expression whose type is incompatible with the function definition are typically catastrophic."
+  },
+  {
+    "id": "DCL40-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "DCL40-C",
+    "title": "Do not create incompatible declarations of the same",
+    "kind": "description",
+    "text": "Similarly, the effects of accessing an object using an lvalue of a type that is incompatible with the object defini- tion may range from unintended information exposure to memory overwrite to a hardware trap. 3.7.1"
+  },
+  {
+    "id": "DCL40-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/c0.c",
+    "kind": "compliant",
+    "text": "// DCL40-C: Compliant Solution (Incompatible Object Declarations)\n/* In a.c */\nextern int i;  \n \nint f(void) {\n  return ++i;  \n}\n \n/* In b.c */\nint i;\n"
+  },
+  {
+    "id": "DCL40-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/c1.c",
+    "kind": "compliant",
+    "text": "// DCL40-C: Compliant Solution (Incompatible Array Declarations)\n/* In a.c */\nextern int a[];  \n \nint f(unsigned int i, int x) {\n  int tmp = a[i];  \n  a[i] = x;        \n  return tmp;\n}\n \n/* In b.c */\nint a[] = { 1, 2, 3, 4 };\n"
+  },
+  {
+    "id": "DCL40-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/c2.c",
+    "kind": "compliant",
+    "text": "// DCL40-C: Compliant Solution (Incompatible Function Declarations)\n/* In a.c */\nextern int f(int a);  \n \nint g(int a) {\n  return f(a);  \n}\n \n/* In b.c */\nint f(int a) {  \n  return a * 2;\n}\n"
+  },
+  {
+    "id": "DCL40-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/c3.c",
+    "kind": "compliant",
+    "text": "// DCL40-C: Compliant Solution (Incompatible Variadic Function Declarations)\n/* In a.c */\nvoid buginf(const char *fmt, ...) {\n   /* ... */\n}\n \n/* In b.c */\nvoid buginf(const char *fmt, ...);\n"
+  },
+  {
+    "id": "DCL40-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/c4.c",
+    "kind": "compliant",
+    "text": "// DCL40-C: Compliant Solution (Excessively Long Identifiers)\n/* In bashline.h */\nextern char * bash_groupname_completion(const char *, int);  \n \n/* In a.c */\n#include \"bashline.h\"\n \nvoid f(const char *s, int i) {\n  bash_groupname_completion(s, i); \n}\n \n/* In b.c */\nint bash_groupname_completion_funct;\n"
+  },
+  {
+    "id": "DCL40-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/nc0.c",
+    "kind": "noncompliant",
+    "text": "// DCL40-C: Noncompliant Code Example (Incompatible Object Declarations)\n/* In a.c */\nextern int i;   /* UB 15 */\n \nint f(void) {\n  return ++i;   /* UB 37 */\n}\n \n/* In b.c */\nshort i;   /* UB 15 */\n"
+  },
+  {
+    "id": "DCL40-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/nc1.c",
+    "kind": "noncompliant",
+    "text": "// DCL40-C: Noncompliant Code Example (Incompatible Array Declarations)\n/* In a.c */\nextern int *a;   /* UB 15 */\n \nint f(unsigned int i, int x) {\n  int tmp = a[i];   /* UB 37: read access */\n  a[i] = x;         /* UB 37: write access */\n  return tmp;\n}\n \n/* In b.c */\nint a[] = { 1, 2, 3, 4 };   /* UB 15 */\n"
+  },
+  {
+    "id": "DCL40-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/nc2.c",
+    "kind": "noncompliant",
+    "text": "// DCL40-C: Noncompliant Code Example (Incompatible Function Declarations)\n/* In a.c */\nextern int f(int a);   /* UB 15 */\n \nint g(int a) {\n  return f(a);   /* UB 41 */\n}\n \n/* In b.c */\nlong f(long a) {   /* UB 15 */\n  return a * 2;\n}\n"
+  },
+  {
+    "id": "DCL40-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/nc3.c",
+    "kind": "noncompliant",
+    "text": "// DCL40-C: Noncompliant Code Example (Incompatible Variadic Function Declarations)\n/* In a.c */\nvoid buginf(const char *fmt, ...) {\n   /* ... */\n}\n  \n/* In b.c */\nvoid buginf();\n"
+  },
+  {
+    "id": "DCL40-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "DCL40-C",
+    "file_path": "rules/dcl/40/nc4.c",
+    "kind": "noncompliant",
+    "text": "// DCL40-C: Noncompliant Code Example (Excessively Long Identifiers)\n/* In bashline.h */\n/* UB 15, UB 31 */\nextern char * bash_groupname_completion_function(const char *, int);\n \n/* In a.c */\n#include \"bashline.h\"\n \nvoid f(const char *s, int i) {\n  bash_groupname_completion_function(s, i);  /* UB 41 */\n}\n \n/* In b.c */\nint bash_groupname_completion_funct;  /* UB 15, UB 31 */\n"
+  }
+]

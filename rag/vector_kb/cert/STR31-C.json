@@ -1,0 +1,162 @@
+[
+  {
+    "id": "STR31-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "STR31-C",
+    "title": "Guarantee that storage for strings has sufficient space",
+    "kind": "description",
+    "text": "for character data and the null terminator Copying data to a buffer that is not large enough to hold that data results in a buffer overflow. Buffer overflows occur frequently when manipulating strings [Seacord 2013b]. To prevent such errors, either limit copies through truncation or, preferably, ensure that the destination is of suffi- cient size to hold the character data to be copied and the null-termination character. (See STR03- C. Do not inadvertently truncate a string.) When strings live on the heap, this rule is a specific instance of MEM35-C. Allocate sufficient memory for an object. Because strings are represented as arrays of characters, this rule is related to both ARR30-C. Do not form or use out-of-bounds pointers or array subscripts and ARR38-C. Guarantee that library functions do not form invalid pointers. 8.2.1"
+  },
+  {
+    "id": "STR31-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c0.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (Off-by-One Error)\n#include <stddef.h>\n  \nvoid copy(size_t n, char src[n], char dest[n]) {\n   size_t i;\n  \n   for (i = 0; src[i] && (i < n - 1); ++i) {\n     dest[i] = src[i];\n   }\n   dest[i] = '\\0';\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c1.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (fgets())\n#include <stdio.h>\n#include <string.h>\n  \nenum { BUFFERSIZE = 32 };\n  \nvoid func(void) {\n  char buf[BUFFERSIZE];\n  int ch;\n \n  if (fgets(buf, sizeof(buf), stdin)) {\n    /* fgets() succeeded; scan for newline character */\n    char *p = strchr(buf, '\\n');\n    if (p) {\n      *p = '\\0';\n    } else {\n      /* Newline not found; flush stdin to end of line */\n      while ((ch = getchar()) != '\\n' && ch != EOF)\n        ;\n      if (ch == EOF && !feof(stdin) && !ferror(stdin)) {\n          /* Character resembles EOF; handle error */\n      }\n    }\n  } else {\n    /* fgets() failed; handle error */\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c10.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c10.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (sprintf())\n#include <stdio.h>\n  \nvoid func(const char *name) {\n  char filename[128];\n  sprintf(filename, \"%.123s.txt\", name);\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c11.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c11.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (snprintf())\n#include <stdio.h>\n  \nvoid func(const char *name) {\n  char filename[128];\n  snprintf(filename, sizeof(filename), \"%s.txt\", name);\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c2.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (gets_s())\n#define __STDC_WANT_LIB_EXT1__ 1\n#include <stdio.h>\n  \nenum { BUFFERSIZE = 32 };\n  \nvoid func(void) {\n  char buf[BUFFERSIZE];\n \n  if (gets_s(buf, sizeof(buf)) == NULL) {\n    /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c3.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (getline(), POSIX)\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n  \nvoid func(void) {\n  int ch;\n  size_t buffer_size = 32;\n  char *buffer = malloc(buffer_size);\n  \n  if (!buffer) {\n    /* Handle error */\n    return;\n  }\n \n  if ((ssize_t size = getline(&buffer, &buffer_size, stdin))\n        == -1) {\n    /* Handle error */\n  } else {\n    char *p = strchr(buffer, '\\n');\n    if (p) {\n      *p = '\\0';\n    } else {\n      /* Newline not found; flush stdin to end of line */\n      while ((ch = getchar()) != '\\n' && ch != EOF)\n        ;\n      if (ch == EOF && !feof(stdin) && !ferror(stdin)) {\n         /* Character resembles EOF; handle error */\n      }\n    }\n  }\n  free (buffer);\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c4.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (getchar())\n#include <stdio.h>\n  \nenum { BUFFERSIZE = 32 };\n  \nvoid func(void) {\n  char buf[BUFFERSIZE];\n  int ch;\n  size_t index = 0;\n  size_t chars_read = 0;\n  \n  while ((ch = getchar()) != '\\n' && ch != EOF) {\n    if (index < sizeof(buf) - 1) {\n      buf[index++] = (char)ch;\n    }\n    chars_read++;\n  }\n  buf[index] = '\\0';  /* Terminate string */\n  if (ch == EOF) {\n    /* Handle EOF or error */\n  }\n  if (chars_read > index) {\n    /* Handle truncation */\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c5.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (fscanf())\n#include <stdio.h>\n  \nenum { BUF_LENGTH = 1024 };\n  \nvoid get_data(void) {\n  char buf[BUF_LENGTH];\n  if (1 != fscanf(stdin, \"%1023s\", buf)) {\n    /* Handle error */\n  }\n \n  /* Rest of function */\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c6.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c6.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (argv)\n#include <stdlib.h>\n#include <string.h>\n  \nint main(int argc, char *argv[]) {\n  /* Ensure argv[0] is not null */\n  const char *const name = (argc && argv[0]) ? argv[0] : \"\";\n  char *prog_name = (char *)malloc(strlen(name) + 1);\n  if (prog_name != NULL) {\n    strcpy(prog_name, name);\n  } else {\n    /* Handle error */\n  }\n  free(prog_name);\n  return 0;\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c7.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c7.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (argv)\n#define __STDC_WANT_LIB_EXT1__ 1\n#include <stdlib.h>\n#include <string.h>\n  \nint main(int argc, char *argv[]) {\n  /* Ensure argv[0] is not null */\n  const char *const name = (argc && argv[0]) ? argv[0] : \"\";\n  char *prog_name;\n  size_t prog_size;\n \n  prog_size = strlen(name) + 1;\n  prog_name = (char *)malloc(prog_size);\n \n  if (prog_name != NULL) {\n    if (strcpy_s(prog_name, prog_size, name)) {\n      /* Handle  error */\n    }\n  } else {\n    /* Handle error */\n  }\n  /* ... */\n  free(prog_name);\n  return 0;\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c8.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c8.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (argv)\nint main(int argc, char *argv[]) {\n  /* Ensure argv[0] is not null */\n  const char * const prog_name = (argc && argv[0]) ? argv[0] : \"\";\n  /* ... */\n  return 0;\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_c9.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/c9.c",
+    "kind": "compliant",
+    "text": "// STR31-C: Compliant Solution (getenv())\n#include <stdlib.h>\n#include <string.h>\n  \nvoid func(void) {\n  char *buff;\n  char *editor = getenv(\"EDITOR\");\n  if (editor == NULL) {\n    /* EDITOR environment variable not set */\n  } else {\n    size_t len = strlen(editor) + 1;\n    buff = (char *)malloc(len);\n    if (buff == NULL) {\n      /* Handle error */\n    } \n    memcpy(buff, editor, len);\n    free(buff);\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc0.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (Off-by-One Error)\n#include <stddef.h>\n  \nvoid copy(size_t n, char src[n], char dest[n]) {\n   size_t i;\n  \n   for (i = 0; src[i] && (i < n); ++i) {\n     dest[i] = src[i];\n   }\n   dest[i] = '\\0';\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc1.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (gets())\n#include <stdio.h>\n  \n#define BUFFER_SIZE 1024\n \nvoid func(void) {\n  char buf[BUFFER_SIZE];\n  if (gets(buf) == NULL) {\n    /* Handle error */\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc2.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (getchar())\n#include <stdio.h>\n  \nenum { BUFFERSIZE = 32 };\n  \nvoid func(void) {\n  char buf[BUFFERSIZE];\n  char *p;\n  int ch;\n  p = buf;\n  while ((ch = getchar()) != '\\n' && ch != EOF) {\n    *p++ = (char)ch;\n  }\n  *p++ = 0;\n  if (ch == EOF) {\n      /* Handle EOF or error */\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc3.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (fscanf())\n#include <stdio.h>\n  \nenum { BUF_LENGTH = 1024 };\n  \nvoid get_data(void) {\n  char buf[BUF_LENGTH];\n  if (1 != fscanf(stdin, \"%s\", buf)) {\n    /* Handle error */\n  }\n \n  /* Rest of function */\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc4.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (argv)\n#include <string.h>\n  \nint main(int argc, char *argv[]) {\n  /* Ensure argv[0] is not null */\n  const char *const name = (argc && argv[0]) ? argv[0] : \"\";\n  char prog_name[128];\n  strcpy(prog_name, name);\n  \n  return 0;\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc5.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (getenv())\n#include <stdlib.h>\n#include <string.h>\n  \nvoid func(void) {\n  char buff[256];\n  char *editor = getenv(\"EDITOR\");\n  if (editor == NULL) {\n    /* EDITOR environment variable not set */\n  } else {\n    strcpy(buff, editor);\n  }\n}\n"
+  },
+  {
+    "id": "STR31-C_samples_nc6.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "STR31-C",
+    "file_path": "rules/str/31/nc6.c",
+    "kind": "noncompliant",
+    "text": "// STR31-C: Noncompliant Code Example (sprintf())\n#include <stdio.h>\n  \nvoid func(const char *name) {\n  char filename[128];\n  sprintf(filename, \"%s.txt\", name);\n}\n"
+  }
+]

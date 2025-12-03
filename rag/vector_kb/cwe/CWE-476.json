@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CWE-476_0",
+    "source": "CWE",
+    "cwe_id": "CWE-476",
+    "title": "NULL Pointer Dereference",
+    "text": "Description: The product dereferences a pointer that it expects to be valid but is NULL. Consequences: Availability DoS: Crash, Exit, or Restart NULL pointer dereferences usually result in the failure of the process unless exception handling (on some platforms) is available and implemented. Even when exception handling is being used, it can still be very difficult to return the software to a safe state of operation. Integrity Confidentiality Execute Unauthorized Code or Commands Read Memory Modify Memory In rare circumstances, when NULL is equivalent to the 0x0 memory address and privileged code can access it, then writing or reading memory is possible, which may lead to code execution. Mitigations: Implementation For any pointers that could have been modified or provided from a function that can return NULL, check the pointer for NULL before use. When working with a multithreaded or otherwise asynchronous environment, ensure that proper locking APIs are used to lock before the check, and unlock when it has finished [REF-1484]. Requirements Select a programming language that is not susceptible to these issues. Implementation Check the results of all functions that return a value and verify that the value is non-null before acting upon it. Moderate Checking the return value of the function will typically be sufficient, however beware of race conditions (CWE-362) in a concurrent environment. This solution does not handle the use of improperly initialized variables (CWE-665).",
+    "url": "https://cwe.mitre.org/data/definitions/476.html"
+  },
+  {
+    "id": "CWE-476_1",
+    "source": "CWE",
+    "cwe_id": "CWE-476",
+    "title": "NULL Pointer Dereference",
+    "text": "Architecture and Design Identify all variables and data stores that receive information from external sources, and apply input validation to make sure that they are only initialized to expected values. Implementation Explicitly initialize all variables and other data stores, either during declaration or just before the first usage. Detection Methods: Automated Dynamic Analysis This weakness can be detected using dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection. The software's operation may slow down, but it should not become unstable, crash, or generate incorrect results. Moderate Manual Dynamic Analysis Identify error conditions that are not likely to occur during normal usage and trigger them. For example, run the program under low memory conditions, run with insufficient privileges or permissions, interrupt a transaction before it is completed, or disable connectivity to basic network services such as DNS. Monitor the software for any unexpected behavior. If you trigger an unhandled exception or similar error that was discovered and handled by the application's environment, it may still indicate unexpected conditions that were not handled by the application itself.",
+    "url": "https://cwe.mitre.org/data/definitions/476.html"
+  },
+  {
+    "id": "CWE-476_2",
+    "source": "CWE",
+    "cwe_id": "CWE-476",
+    "title": "NULL Pointer Dereference",
+    "text": "Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/476.html"
+  }
+]

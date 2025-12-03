@@ -1,0 +1,74 @@
+[
+  {
+    "id": "CWE-131_0",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Description: The product does not correctly calculate the size to be used when allocating a buffer, which could lead to a buffer overflow. Consequences: Integrity Availability Confidentiality DoS: Crash, Exit, or Restart Execute Unauthorized Code or Commands Read Memory Modify Memory If the incorrect calculation is used in the context of memory allocation, then the software may create a buffer that is smaller or larger than expected. If the allocated buffer is smaller than expected, this could lead to an out-of-bounds read or write (CWE-119), possibly causing a crash, allowing arbitrary code execution, or exposing sensitive data. Mitigations: Implementation When allocating a buffer for the purpose of transforming, converting, or encoding an input, allocate enough memory to handle the largest possible encoding. For example, in a routine that converts \"&\" characters to \"&amp;\" for HTML entity encoding, the output buffer needs to be at least 5 times as large as the input buffer. Implementation Understand the programming language's underlying representation and how it interacts with numeric calculation (CWE-681). Pay close attention to byte size discrepancies, precision, signed/unsigned distinctions, truncation, conversion and casting between types, \"not-a-number\" calculations, and how the language handles numbers that are too large or too small for its underlying representation.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_1",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "[REF-7] Also be careful to account for 32-bit, 64-bit, and other potential differences that may affect the numeric representation. Implementation Input Validation Perform input validation on any numeric input by ensuring that it is within the expected range. Enforce that the input meets both the minimum and maximum requirements for the expected range. Architecture and Design For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server. Implementation When processing structured incoming data containing a size field followed by raw data, identify and resolve any inconsistencies between the size field and the actual size of the data (CWE-130). Implementation When allocating memory that uses sentinels to mark the end of a data structure - such as NUL bytes in strings - make sure you also include the sentinel in your calculation of the total amount of memory that must be allocated. Implementation Replace unbounded copy functions with analogous functions that support length arguments, such as strcpy with strncpy. Create these if they are not available.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_2",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Moderate This approach is still susceptible to calculation errors, including issues such as off-by-one errors (CWE-193) and incorrectly calculating buffer lengths (CWE-131). Additionally, this only addresses potential overflow issues. Resource consumption / exhaustion issues are still possible. Implementation Use sizeof() on the appropriate data type to avoid CWE-467. Implementation Use the appropriate type for the desired action. For example, in C/C++, only use unsigned types for values that could never be negative, such as height, width, or other numbers related to quantity. This will simplify validation and will reduce surprises related to unexpected casting. Architecture and Design Libraries or Frameworks Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]. Use libraries or frameworks that make it easier to handle numbers without unexpected consequences, or buffer allocation routines that automatically track buffer size. Examples include safe integer handling packages such as SafeInt (C++) or IntegerLib (C or C++). [REF-106] Operation Build and Compilation Environment Hardening Use automatic buffer overflow detection mechanisms that are offered by certain compilers or compiler extensions.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_3",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Examples include: the Microsoft Visual Studio /GS flag, Fedora/Red Hat FORTIFY_SOURCE GCC flag, StackGuard, and ProPolice, which provide various mechanisms including canary-based detection and range/index checking. D3-SFCV (Stack Frame Canary Validation) from D3FEND [REF-1334] discusses canary-based detection in detail. Defense in Depth This is not necessarily a complete solution, since these mechanisms only detect certain types of overflows. In addition, the result is still a denial of service, since the typical response is to exit the application. Operation Build and Compilation Environment Hardening Run or compile the software using features or extensions that randomly arrange the positions of a program's executable and libraries in memory. Because this makes the addresses unpredictable, it can prevent an attacker from reliably jumping to exploitable code. Examples include Address Space Layout Randomization (ASLR) [REF-58] [REF-60] and Position-Independent Executables (PIE) [REF-64]. Imported modules may be similarly realigned if their default memory addresses conflict with other modules, in a process known as \"rebasing\" (for Windows) and \"prelinking\" (for Linux) [REF-1332] using randomly generated addresses. ASLR for libraries cannot be used in conjunction with prelink since it would require relocating the libraries at run-time, defeating the whole purpose of prelinking.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_4",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "For more information on these techniques see D3-SAOR (Segment Address Offset Randomization) from D3FEND [REF-1335]. Defense in Depth These techniques do not provide a complete solution. For instance, exploits frequently use a bug that discloses memory addresses in order to maximize reliability of code execution [REF-1337]. It has also been shown that a side-channel attack can bypass ASLR [REF-1333] Operation Environment Hardening Use a CPU and operating system that offers Data Execution Protection (using hardware NX or XD bits) or the equivalent techniques that simulate this feature in software, such as PaX [REF-60] [REF-61]. These techniques ensure that any instruction executed is exclusively at a memory address that is part of the code segment. For more information on these techniques see D3-PSEP (Process Segment Execution Prevention) from D3FEND [REF-1336]. Defense in Depth This is not a complete solution, since buffer overflows could be used to overwrite nearby variables to modify the software's state in dangerous ways. In addition, it cannot be used in cases in which self-modifying code is required. Finally, an attack could still cause a denial of service, since the typical response is to exit the application. Implementation Compilation or Build Hardening Examine compiler warnings closely and eliminate problems with potential security implications, such as signed / unsigned mismatch in memory operations, or use of uninitialized variables.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_5",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Even if the weakness is rarely exploitable, a single failure may lead to the compromise of the entire system. Architecture and Design Operation Environment Hardening Run your code using the lowest privileges that are required to accomplish the necessary tasks [REF-76]. If possible, create isolated accounts with limited privileges that are only used for a single task. That way, a successful attack will not immediately give the attacker access to the rest of the software or its environment. For example, database applications rarely need to run as the database administrator, especially in day-to-day operations. Architecture and Design Operation Sandbox or Jail Run the code in a \"jail\" or similar sandbox environment that enforces strict boundaries between the process and the operating system. This may effectively restrict which files can be accessed in a particular directory or which commands can be executed by the software. OS-level examples include the Unix chroot jail, AppArmor, and SELinux. In general, managed code may provide some protection. For example, java.io.FilePermission in the Java SecurityManager allows the software to specify restrictions on file operations. This may not be a feasible solution, and it only limits the impact to the operating system; the rest of the application may still be subject to compromise. Be careful to avoid CWE-243 and other weaknesses related to jails.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_6",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Limited The effectiveness of this mitigation depends on the prevention capabilities of the specific sandbox or jail being used and might only help to reduce the scope of an attack, such as restricting the attacker to certain system calls or limiting the portion of the file system that can be accessed. Detection Methods: Automated Static Analysis This weakness can often be detected using automated static analysis tools. Many modern tools use data flow analysis or constraint-based techniques to minimize the number of false positives. Automated static analysis generally does not account for environmental considerations when reporting potential errors in buffer calculations. This can make it difficult for users to determine which warnings should be investigated first. For example, an analysis tool might report buffer overflows that originate from command line arguments in a program that is not expected to run with setuid or other special privileges. High Detection techniques for buffer-related errors are more mature than for most other weakness types. Automated Dynamic Analysis This weakness can be detected using dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection. The software's operation may slow down, but it should not become unstable, crash, or generate incorrect results.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_7",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Moderate Without visibility into the code, black box methods may not be able to sufficiently distinguish this weakness from others, requiring follow-up manual methods to diagnose the underlying problem. Manual Analysis Manual analysis can be useful for finding this weakness, but it might not achieve desired code coverage within limited time constraints. This becomes difficult for weaknesses that must be considered for all inputs, since the attack surface can be too large. Manual Analysis This weakness can be detected using tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session. Specifically, manual static analysis is useful for evaluating the correctness of allocation calculations. This can be useful for detecting overflow conditions (CWE-190) or similar weaknesses that might have serious security impacts on the program. High These may be more effective than strictly automated techniques. This is especially the case with weaknesses that are related to design and business rules.",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  },
+  {
+    "id": "CWE-131_8",
+    "source": "CWE",
+    "cwe_id": "CWE-131",
+    "title": "Incorrect Calculation of Buffer Size",
+    "text": "Automated Static Analysis - Binary or Bytecode According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Binary Weakness Analysis - including disassembler + source code weakness analysis High Manual Static Analysis - Binary or Bytecode According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies SOAR Partial Manual Static Analysis - Source Code According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Focused Manual Spotcheck - Focused manual analysis of source Manual Source Code Review (not inspections) SOAR Partial Automated Static Analysis - Source Code According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer Cost effective for partial coverage: Source Code Quality Analyzer High Architecture or Design Review According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Formal Methods / Correct-By-Construction Cost effective for partial coverage: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/131.html"
+  }
+]

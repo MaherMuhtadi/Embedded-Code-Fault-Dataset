@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CWE-401_0",
+    "source": "CWE",
+    "cwe_id": "CWE-401",
+    "title": "Missing Release of Memory after Effective Lifetime",
+    "text": "Description: The product does not sufficiently track and release allocated memory after it has been used, making the memory unavailable for reallocation and reuse. Consequences: Availability DoS: Crash, Exit, or Restart DoS: Instability DoS: Resource Consumption (CPU) DoS: Resource Consumption (Memory) Most memory leaks result in general product reliability problems, but if an attacker can intentionally trigger a memory leak, the attacker might be able to launch a denial of service attack (by crashing or hanging the program) or take advantage of other unexpected program behavior resulting from a low memory condition. Other Reduce Performance Mitigations: Implementation Libraries or Frameworks Choose a language or tool that provides automatic memory management, or makes manual memory management less error-prone. For example, glibc in Linux provides protection against free of invalid pointers. When using Xcode to target OS X or iOS, enable automatic reference counting (ARC) [REF-391]. To help correctly and consistently manage memory when programming in C++, consider using a smart pointer class such as std::auto_ptr (defined by ISO/IEC ISO/IEC 14882:2003), std::shared_ptr and std::unique_ptr (specified by an upcoming revision of the C++ standard, informally referred to as C++ 1x), or equivalent solutions such as Boost. Architecture and Design Use an abstraction library to abstract away risky APIs. Not a complete solution.",
+    "url": "https://cwe.mitre.org/data/definitions/401.html"
+  },
+  {
+    "id": "CWE-401_1",
+    "source": "CWE",
+    "cwe_id": "CWE-401",
+    "title": "Missing Release of Memory after Effective Lifetime",
+    "text": "Architecture and Design Build and Compilation The Boehm-Demers-Weiser Garbage Collector or valgrind can be used to detect leaks in code. This is not a complete solution as it is not 100% effective. Detection Methods: Fuzzing Fuzz testing (fuzzing) is a powerful technique for generating large numbers of diverse inputs - either randomly or algorithmically - and dynamically invoking the code with those inputs. Even with random inputs, it is often capable of generating unexpected results such as crashes, memory corruption, or resource consumption. Fuzzing effectively produces repeatable test cases that clearly indicate bugs, which helps developers to diagnose the issues. High Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/401.html"
+  }
+]

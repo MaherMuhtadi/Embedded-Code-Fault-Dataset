@@ -1,0 +1,50 @@
+[
+  {
+    "id": "MEM35-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "MEM35-C",
+    "title": "Allocate sufficient memory for an object",
+    "kind": "description",
+    "text": "The types of integer expressions used as size arguments to , , , malloc() calloc() realloc() or must have sufficient range to represent the size of the objects to be stored. aligned_alloc() If size arguments are incorrect or can be manipulated by an attacker, then a buffer overflow may occur. Incorrect size arguments, inadequate range checking, integer overflow, or truncation can result in the allocation of an inadequately sized buffer. Typically, the amount of memory to allocate will be the size of the type of object to allocate. When allocating space for an array, the size of the object will be multiplied by the bounds of the array. When allocating space for a structure containing a flexible array member, the size of the ar- ray member must be added to the size of the structure. (See MEM33-C. Allocate and copy struc- tures containing a flexible array member dynamically.) Use the correct type of the object when computing the size of memory to allocate. STR31-C. Guarantee that storage for strings has sufficient space for character data and the null terminator is a specific instance of this rule. 9.5.1"
+  },
+  {
+    "id": "MEM35-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM35-C",
+    "file_path": "rules/mem/35/c0.c",
+    "kind": "compliant",
+    "text": "// MEM35-C: Compliant Solution (Pointer)\n#include <stdlib.h>\n#include <time.h>\n  \nstruct tm *make_tm(int year, int mon, int day, int hour,\n                   int min, int sec) {\n  struct tm *tmb;\n  tmb = (struct tm *)malloc(sizeof(*tmb));\n  if (tmb == NULL) {\n    return NULL;\n  }\n  *tmb = (struct tm) {\n    .tm_sec = sec, .tm_min = min, .tm_hour = hour,\n    .tm_mday = day, .tm_mon = mon, .tm_year = year\n  };\n  return tmb;\n}\n"
+  },
+  {
+    "id": "MEM35-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM35-C",
+    "file_path": "rules/mem/35/c1.c",
+    "kind": "compliant",
+    "text": "// MEM35-C: Compliant Solution (Integer)\n#include <stdint.h>\n#include <stdlib.h>\n \nvoid function(size_t len) {\n  long *p;\n  if (len == 0 || len > SIZE_MAX / sizeof(long)) {\n    /* Handle overflow */\n  }\n  p = (long *)malloc(len * sizeof(long));\n  if (p == NULL) {\n    /* Handle error */\n  }\n  free(p);\n}\n"
+  },
+  {
+    "id": "MEM35-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM35-C",
+    "file_path": "rules/mem/35/c2.c",
+    "kind": "compliant",
+    "text": "// MEM35-C: Compliant Solution (Integer)\n#include <stdint.h>\n#include <stdlib.h>\n  \nvoid function(size_t len) {\n  long *p;\n  if (len == 0 || len > SIZE_MAX / sizeof(*p)) {\n    /* Handle overflow */\n  }\n  p = (long *)malloc(len * sizeof(*p));\n  if (p == NULL) {\n    /* Handle error */\n  }\n  free(p);\n}\n"
+  },
+  {
+    "id": "MEM35-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM35-C",
+    "file_path": "rules/mem/35/nc0.c",
+    "kind": "noncompliant",
+    "text": "// MEM35-C: Noncompliant Code Example (Pointer)\n#include <stdlib.h>\n#include <time.h>\n  \nstruct tm *make_tm(int year, int mon, int day, int hour,\n                   int min, int sec) {\n  struct tm *tmb;\n  tmb = (struct tm *)malloc(sizeof(tmb));\n  if (tmb == NULL) {\n    return NULL;\n  }\n  *tmb = (struct tm) {\n    .tm_sec = sec, .tm_min = min, .tm_hour = hour,\n    .tm_mday = day, .tm_mon = mon, .tm_year = year\n  };\n  return tmb;\n}\n"
+  },
+  {
+    "id": "MEM35-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM35-C",
+    "file_path": "rules/mem/35/nc1.c",
+    "kind": "noncompliant",
+    "text": "// MEM35-C: Noncompliant Code Example (Integer)\n#include <stdint.h>\n#include <stdlib.h>\n  \nvoid function(size_t len) {\n  long *p;\n  if (len == 0 || len > SIZE_MAX / sizeof(long)) {\n    /* Handle overflow */\n  }\n  p = (long *)malloc(len * sizeof(int));\n  if (p == NULL) {\n    /* Handle error */\n  }\n  free(p);\n}\n"
+  }
+]

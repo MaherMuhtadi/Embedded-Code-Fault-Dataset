@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-675_0",
+    "source": "CWE",
+    "cwe_id": "CWE-675",
+    "title": "Multiple Operations on Resource in Single-Operation Context",
+    "text": "Description: The product performs the same operation on a resource two or more times, when the operation should only be applied once. Consequences: Other Other",
+    "url": "https://cwe.mitre.org/data/definitions/675.html"
+  }
+]

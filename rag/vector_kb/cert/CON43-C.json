@@ -1,0 +1,58 @@
+[
+  {
+    "id": "CON43-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/c0.c",
+    "kind": "compliant",
+    "text": "// CON43-C: Compliant Solution (Mutex)\n#include <threads.h>\n \nstatic int account_balance;\nstatic mtx_t account_lock;\n  \nint debit(int amount) {\n  if (mtx_lock(&account_lock) == thrd_error) {\n    return -1;   /* Indicate error to caller */\n  }\n  account_balance -= amount;\n  if (mtx_unlock(&account_lock) == thrd_error) {\n    return -1;   /* Indicate error to caller */\n  }\n  return 0;   /* Indicate success */\n}\n \nint credit(int amount) {\n  if (mtx_lock(&account_lock) == thrd_error) {\n    return -1;   /* Indicate error to caller */\n  }\n  account_balance += amount;\n  if (mtx_unlock(&account_lock) == thrd_error) {\n    return -1;   /* Indicate error to caller */\n  }\n  return 0;   /* Indicate success */\n}\n  \nint main(void) {\n  if(mtx_init(&account_lock, mtx_plain) == thrd_error) {\n    /* Handle error */\n  }\n  /* ... */\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/c1.c",
+    "kind": "compliant",
+    "text": "// CON43-C: Compliant Solution (Atomic)\n#include <stdatomic.h>\n \natomic_int account_balance;\n \nvoid debit(int amount) {\n  account_balance -= amount;\n}\n \nvoid credit(int amount) {\n  account_balance += amount;\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/c2.c",
+    "kind": "compliant",
+    "text": "// CON43-C: Compliant Solution (C11, Atomic)\n#include <stdio.h>\n#include <stdatomic.h>\n  \nvoid doStuff(atomic_int *ps) {\n  switch (atomic_load(ps)) {\n    case 0: { printf(\"0\"); break; }\n    case 1: { printf(\"1\"); break; }\n    case 2: { printf(\"2\"); break; }\n    case 3: { printf(\"3\"); break; }\n    case 4: { printf(\"4\"); break; }\n    default: { printf(\"default\"); break; }\n  }\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/c3.c",
+    "kind": "compliant",
+    "text": "// CON43-C: Compliant Solution (C11, Fences)\n#include <stdio.h>\n#include <stdatomic.h>\n  \nvoid doStuff(int *ps) {\n  atomic_thread_fence(memory_order_acquire);\n  switch (*ps) {\n    case 0: { printf(\"0\"); break; }\n    case 1: { printf(\"1\"); break; }\n    case 2: { printf(\"2\"); break; }\n    case 3: { printf(\"3\"); break; }\n    case 4: { printf(\"4\"); break; }\n    default: { printf(\"default\"); break; }\n  }\n  atomic_thread_fence(memory_order_release);\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/nc0.c",
+    "kind": "noncompliant",
+    "text": "// CON43-C: Noncompliant Code Example\nstatic volatile int account_balance;\n \nvoid debit(int amount) {\n  account_balance -= amount;\n}\n \nvoid credit(int amount) {\n  account_balance += amount;\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/nc1.c",
+    "kind": "noncompliant",
+    "text": "// CON43-C: Noncompliant Code Example (Double-Fetch)\n#include <stdio.h>\n  \nvoid doStuff(int *ps) {\n  switch (*ps) {\n    case 0: { printf(\"0\"); break; }\n    case 1: { printf(\"1\"); break; }\n    case 2: { printf(\"2\"); break; }\n    case 3: { printf(\"3\"); break; }\n    case 4: { printf(\"4\"); break; }\n    default: { printf(\"default\"); break; }\n  }\n}\n"
+  },
+  {
+    "id": "CON43-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON43-C",
+    "file_path": "rules/con/43/nc2.c",
+    "kind": "noncompliant",
+    "text": "// CON43-C: Noncompliant Code Example (Volatile)\n#include <stdio.h>\n  \nvoid doStuff(volatile int *ps) {\n  switch (*ps) {\n    case 0: { printf(\"0\"); break; }\n    case 1: { printf(\"1\"); break; }\n    case 2: { printf(\"2\"); break; }\n    case 3: { printf(\"3\"); break; }\n    case 4: { printf(\"4\"); break; }\n    default: { printf(\"default\"); break; }\n  }\n}\n"
+  }
+]

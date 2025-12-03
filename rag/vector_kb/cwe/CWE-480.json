@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-480_0",
+    "source": "CWE",
+    "cwe_id": "CWE-480",
+    "title": "Use of Incorrect Operator",
+    "text": "Description: The product accidentally uses the wrong operator, which changes the logic in security-relevant ways. Extended Description: These types of errors are generally the result of a typo by the programmer. Consequences: Other Alter Execution Logic This weakness can cause unintended logic to be executed and other unexpected application behavior. Detection Methods: Automated Static Analysis This weakness can be found easily using static analysis. However in some cases an operator might appear to be incorrect, but is actually correct and reflects unusual logic within the program. Manual Static Analysis This weakness can be found easily using static analysis. However in some cases an operator might appear to be incorrect, but is actually correct and reflects unusual logic within the program.",
+    "url": "https://cwe.mitre.org/data/definitions/480.html"
+  }
+]

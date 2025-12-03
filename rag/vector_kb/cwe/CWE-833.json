@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-833_0",
+    "source": "CWE",
+    "cwe_id": "CWE-833",
+    "title": "Deadlock",
+    "text": "Description: The product contains multiple threads or executable segments that are waiting for each other to release a necessary lock, resulting in deadlock. Consequences: Availability DoS: Resource Consumption (CPU) DoS: Resource Consumption (Other) DoS: Crash, Exit, or Restart Each thread of execution will \"hang\" and prevent tasks from completing. In some cases, CPU consumption may occur if a lock check occurs in a tight loop.",
+    "url": "https://cwe.mitre.org/data/definitions/833.html"
+  }
+]

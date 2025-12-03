@@ -1,0 +1,26 @@
+[
+  {
+    "id": "MEM31-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "MEM31-C",
+    "title": "Free dynamically allocated memory when no longer",
+    "kind": "description",
+    "text": "needed Before the lifetime of the last pointer that stores the return value of a call to a standard memory allocation function has ended, it must be matched by a call to with that pointer value. free() 9.2.1"
+  },
+  {
+    "id": "MEM31-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM31-C",
+    "file_path": "rules/mem/31/c0.c",
+    "kind": "compliant",
+    "text": "// MEM31-C: Compliant Solution\n#include <stdlib.h>\n \nenum { BUFFER_SIZE = 32 };\n \nint f(void) {\n  char *text_buffer = (char *)malloc(BUFFER_SIZE);\n  if (text_buffer == NULL) {\n    return -1;\n  }\n  \n  free(text_buffer);\n  return 0;\n}\n"
+  },
+  {
+    "id": "MEM31-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "MEM31-C",
+    "file_path": "rules/mem/31/nc0.c",
+    "kind": "noncompliant",
+    "text": "// MEM31-C: Noncompliant Code Example\n#include <stdlib.h>\n  \nenum { BUFFER_SIZE = 32 };\n \nint f(void) {\n  char *text_buffer = (char *)malloc(BUFFER_SIZE);\n  if (text_buffer == NULL) {\n    return -1;\n  }\n  return 0;\n}\n"
+  }
+]

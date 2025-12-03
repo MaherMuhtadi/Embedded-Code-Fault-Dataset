@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-835_0",
+    "source": "CWE",
+    "cwe_id": "CWE-835",
+    "title": "Loop with Unreachable Exit Condition ('Infinite Loop')",
+    "text": "Description: The product contains an iteration or loop with an exit condition that cannot be reached, i.e., an infinite loop. Consequences: Availability DoS: Resource Consumption (CPU) DoS: Resource Consumption (Memory) DoS: Amplification An infinite loop will cause unexpected consumption of resources, such as CPU cycles or memory. The software's operation may slow down, or cause a long time to respond.",
+    "url": "https://cwe.mitre.org/data/definitions/835.html"
+  }
+]

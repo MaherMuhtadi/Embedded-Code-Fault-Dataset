@@ -1,0 +1,106 @@
+[
+  {
+    "id": "EXP33-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "EXP33-C",
+    "title": "Do not read uninitialized memory",
+    "kind": "description",
+    "text": "Local, automatic variables assume unexpected values if they are read before they are initialized. The C Standard, 6.7.9, paragraph 10, specifies [ISO/IEC 9899:2011] If an object that has automatic storage duration is not initialized explicitly, its value is in- determinate. See undefined behavior 11. When local, automatic variables are stored on the program stack, for example, their values default to whichever values are currently stored in stack memory. Additionally, some dynamic memory allocation functions do not initialize the contents of the memory they allocate. Function Initialization Does not perform initialization aligned_alloc() Zero-initializes allocated memory calloc() Does not perform initialization malloc() Copies contents from original pointer; may not initial- realloc() ize all memory Uninitialized automatic variables or dynamically allocated memory has indeterminate values, which, for objects of some types, can be a trap representation. Reading such trap representations is undefined behavior (see undefined behavior 10 and undefined behavior 12); it can cause a pro- gram to behave in an unexpected manner and provide an avenue for attack. In many cases, com- pilers issue a warning diagnostic message when reading uninitialized variables. (See MSC00-C. Compile cleanly at high warning levels for more information.) 4.3.1"
+  },
+  {
+    "id": "EXP33-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c0.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (Return-by-Reference)\nvoid set_flag(int number, int *sign_flag) {\n  if (NULL == sign_flag) {\n    return;\n  }\n \n  /* Account for number being 0 */\n  if (number >= 0) {\n    *sign_flag = 1;\n  } else {\n    *sign_flag = -1;\n  }\n}\n \nint is_negative(int number) {\n  int sign = 0; /* Initialize for defense-in-depth */\n  set_flag(number, &sign);\n  return sign < 0;\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c1.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (Uninitialized Local)\n#include <stdio.h>\nenum { BUFFERSIZE = 24 };\nvoid report_error(const char *msg) {\n  char buffer[BUFFERSIZE];\n \n  if (0 < snprintf(buffer, BUFFERSIZE, \"Error: %s\", msg))\n    printf(\"%s\\n\", buffer);\n  else\n    puts(\"Unknown error\");\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c2.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (Uninitialized Local)\n#include <stdio.h>\n  \nvoid report_error(const char *msg) {\n  printf(\"Error: %s\\n\", msg);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c3.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (mbstate_t)\n#include <string.h>\n#include <wchar.h>\n  \nvoid func(const char *mbs) {\n  size_t len;\n  mbstate_t state;\n \n  memset(&state, 0, sizeof(state));\n  len = mbrlen(mbs, strlen(mbs), &state);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c4.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (POSIX, Entropy)\n#include <time.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <sys/time.h>\n \nvoid func(void) {    \n  double cpu_time;\n  struct timeval tv;\n \n  cpu_time = ((double) clock()) / CLOCKS_PER_SEC;\n  gettimeofday(&tv, NULL);\n  srandom((getpid() << 16) ^ tv.tv_sec ^ tv.tv_usec ^ cpu_time);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_c5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/c5.c",
+    "kind": "compliant",
+    "text": "// EXP33-C: Compliant Solution (realloc())\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\n \nenum { OLD_SIZE = 10, NEW_SIZE = 20 };\n  \nint *resize_array(int *array, size_t old_count, size_t new_count) {\n  if (0 == new_count) {\n    return 0;\n  }\n  \n  int *ret = (int *)realloc(array, new_count * sizeof(int));\n  if (!ret) {\n    free(array);\n    return 0;\n  }\n  \n  if (new_count > old_count) {\n    memset(ret + old_count, 0, (new_count - old_count) * sizeof(int));\n  }\n  \n  return ret;\n}\n  \nvoid func(void) {\n  \n  int *array = (int *)malloc(OLD_SIZE * sizeof(int));\n  if (0 == array) {\n    /* Handle error */\n  }\n  \n  for (size_t i = 0; i < OLD_SIZE; ++i) {\n    array[i] = i;\n  }\n  \n  array = resize_array(array, OLD_SIZE, NEW_SIZE);\n  if (0 == array) {\n    /* Handle error */\n  }\n  \n  for (size_t i = 0; i < NEW_SIZE; ++i) {\n    printf(\"%d \", array[i]);\n  }\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc0.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (Return-by-Reference)\nvoid set_flag(int number, int *sign_flag) {\n  if (NULL == sign_flag) {\n    return;\n  }\n \n  if (number > 0) {\n    *sign_flag = 1;\n  } else if (number < 0) {\n    *sign_flag = -1;\n  }\n}\n \nint is_negative(int number) {\n  int sign;\n  set_flag(number, &sign);\n  return sign < 0;\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc1.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (Uninitialized Local)\n#include <stdio.h>\n \n/* Get username and password from user, return -1 on error */\nextern int do_auth(void);\nenum { BUFFERSIZE = 24 }; \nvoid report_error(const char *msg) {\n  const char *error_log;\n  char buffer[BUFFERSIZE];\n \n  sprintf(buffer, \"Error: %s\", error_log);\n  printf(\"%s\\n\", buffer);\n}\n \nint main(void) {\n  if (do_auth() == -1) {\n    report_error(\"Unable to login\");\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc2.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (Uninitialized Local)\n#include <stdio.h>\nenum { BUFFERSIZE = 24 }; \nvoid report_error(const char *msg) {\n  const char *error_log = msg;\n  char buffer[BUFFERSIZE];\n \n  sprintf(buffer, \"Error: %s\", error_log);\n  printf(\"%s\\n\", buffer);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc3.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (mbstate_t)\n#include <string.h>\n#include <wchar.h>\n  \nvoid func(const char *mbs) {\n  size_t len;\n  mbstate_t state;\n \n  len = mbrlen(mbs, strlen(mbs), &state);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc4.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (POSIX, Entropy)\n#include <time.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <sys/time.h>\n   \nvoid func(void) {\n  struct timeval tv;\n  unsigned long junk;\n \n  gettimeofday(&tv, NULL);\n  srandom((getpid() << 16) ^ tv.tv_sec ^ tv.tv_usec ^ junk);\n}\n"
+  },
+  {
+    "id": "EXP33-C_samples_nc5.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP33-C",
+    "file_path": "rules/exp/33/nc5.c",
+    "kind": "noncompliant",
+    "text": "// EXP33-C: Noncompliant Code Example (realloc())\n#include <stdlib.h>\n#include <stdio.h>\nenum { OLD_SIZE = 10, NEW_SIZE = 20 };\n  \nint *resize_array(int *array, size_t count) {\n  if (0 == count) {\n    return 0;\n  }\n  \n  int *ret = (int *)realloc(array, count * sizeof(int));\n  if (!ret) {\n    free(array);\n    return 0;\n  }\n  \n  return ret;\n}\n  \nvoid func(void) {\n  \n  int *array = (int *)malloc(OLD_SIZE * sizeof(int));\n  if (0 == array) {\n    /* Handle error */\n  }\n  \n  for (size_t i = 0; i < OLD_SIZE; ++i) {\n    array[i] = i;\n  }\n  \n  array = resize_array(array, NEW_SIZE);\n  if (0 == array) {\n    /* Handle error */\n  }\n  \n  for (size_t i = 0; i < NEW_SIZE; ++i) {\n    printf(\"%d \", array[i]);\n  }\n}\n"
+  }
+]

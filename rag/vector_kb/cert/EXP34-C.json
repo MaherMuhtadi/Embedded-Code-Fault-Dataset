@@ -1,0 +1,58 @@
+[
+  {
+    "id": "EXP34-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "EXP34-C",
+    "title": "Do not dereference null pointers",
+    "kind": "description",
+    "text": "Dereferencing a null pointer is undefined behavior. On many platforms, dereferencing a null pointer results in abnormal program termination, but this is not required by the standard. See “Clever Attack Exploits Fully-Patched Linux Kernel” [Goodin 2009] for an example of a code execution exploit that resulted from a null pointer deref- erence. 4.4.1"
+  },
+  {
+    "id": "EXP34-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/c0.c",
+    "kind": "compliant",
+    "text": "// EXP34-C: Compliant Solution\n#include <png.h> /* From libpng */\n#include <string.h>\n \n void func(png_structp png_ptr, size_t length, const void *user_data) {\n  png_charp chunkdata;\n  if (length == SIZE_MAX) {\n    /* Handle error */\n  }\n  chunkdata = (png_charp)png_malloc(png_ptr, length + 1);\n  if (NULL == chunkdata) {\n    /* Handle error */\n  }\n  if (NULL == user_data) {\n    /* Handle error */\n  }\n  /* ... */\n  memcpy(chunkdata, user_data, length);\n  /* ... */\n \n }\n"
+  },
+  {
+    "id": "EXP34-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/c1.c",
+    "kind": "compliant",
+    "text": "// EXP34-C: Compliant Solution\n#include <string.h>\n#include <stdlib.h>\n  \nvoid f(const char *input_str) {\n  size_t size;\n  char *c_str;\n  \n  if (NULL == input_str) {\n    /* Handle error */\n  }\n   \n  size = strlen(input_str) + 1;\n  c_str = (char *)malloc(size);\n  if (NULL == c_str) {\n    /* Handle error */\n  }\n  memcpy(c_str, input_str, size);\n  /* ... */\n  free(c_str);\n  c_str = NULL;\n  /* ... */\n}\n"
+  },
+  {
+    "id": "EXP34-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/c2.c",
+    "kind": "compliant",
+    "text": "// EXP34-C: Compliant Solution\nstatic unsigned int tun_chr_poll(struct file *file, poll_table *wait)  {\n  assert(file);\n  struct tun_file *tfile = file->private_data;\n  struct tun_struct *tun = __tun_get(tfile);\n  struct sock *sk;\n  unsigned int mask = 0;\n \n  if (!tun)\n    return POLLERR;\n  assert(tun->dev);\n  sk = tun->sk;\n  assert(sk);\n  assert(sk->socket);\n  /* The remaining code is omitted because it is unchanged... */\n}\n"
+  },
+  {
+    "id": "EXP34-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/nc0.c",
+    "kind": "noncompliant",
+    "text": "// EXP34-C: Noncompliant Code Example\n#include <png.h> /* From libpng */\n#include <string.h>\n  \nvoid func(png_structp png_ptr, int length, const void *user_data) {\n  png_charp chunkdata;\n  chunkdata = (png_charp)png_malloc(png_ptr, length + 1);\n  /* ... */\n  memcpy(chunkdata, user_data, length);\n  /* ... */\n }\n"
+  },
+  {
+    "id": "EXP34-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/nc1.c",
+    "kind": "noncompliant",
+    "text": "// EXP34-C: Noncompliant Code Example\n#include <string.h>\n#include <stdlib.h>\n  \nvoid f(const char *input_str) {\n  size_t size = strlen(input_str) + 1;\n  char *c_str = (char *)malloc(size);\n  memcpy(c_str, input_str, size);\n  /* ... */\n  free(c_str);\n  c_str = NULL;\n  /* ... */\n}\n"
+  },
+  {
+    "id": "EXP34-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "EXP34-C",
+    "file_path": "rules/exp/34/nc2.c",
+    "kind": "noncompliant",
+    "text": "// EXP34-C: Noncompliant Code Example\nstatic unsigned int tun_chr_poll(struct file *file, poll_table *wait)  {\n  struct tun_file *tfile = file->private_data;\n  struct tun_struct *tun = __tun_get(tfile);\n  struct sock *sk = tun->sk;\n  unsigned int mask = 0;\n \n  if (!tun)\n    return POLLERR;\n \n  DBG(KERN_INFO \"%s: tun_chr_poll\\n\", tun->dev->name);\n \n  poll_wait(file, &tun->socket.wait, wait);\n \n  if (!skb_queue_empty(&tun->readq))\n    mask |= POLLIN | POLLRDNORM;\n \n  if (sock_writeable(sk) ||\n     (!test_and_set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags) &&\n     sock_writeable(sk)))\n    mask |= POLLOUT | POLLWRNORM;\n \n  if (tun->dev->reg_state != NETREG_REGISTERED)\n    mask = POLLERR;\n \n  tun_put(tun);\n  return mask;\n}\n"
+  }
+]

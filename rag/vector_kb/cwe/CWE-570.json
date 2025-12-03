@@ -1,0 +1,10 @@
+[
+  {
+    "id": "CWE-570_0",
+    "source": "CWE",
+    "cwe_id": "CWE-570",
+    "title": "Expression is Always False",
+    "text": "Description: The product contains an expression that will always evaluate to false. Consequences: Other Quality Degradation Varies by Context Mitigations: Testing Use Static Analysis tools to spot such conditions. Detection Methods: Automated Static Analysis Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.) High",
+    "url": "https://cwe.mitre.org/data/definitions/570.html"
+  }
+]

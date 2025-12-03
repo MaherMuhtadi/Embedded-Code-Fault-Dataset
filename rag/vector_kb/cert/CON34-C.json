@@ -1,0 +1,82 @@
+[
+  {
+    "id": "CON34-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "CON34-C",
+    "title": "Declare objects shared between threads with",
+    "kind": "description",
+    "text": "appropriate storage durations Accessing the automatic or thread-local variables of one thread from another thread is implemen- tation-defined behavior and can cause invalid memory accesses because the execution of threads can be interwoven within the constraints of the synchronization model. As a result, the referenced stack frame or thread-local variable may no longer be valid when another thread tries to access it. Shared static variables can be protected by thread synchronization mechanisms. However, automatic (local) variables cannot be shared in the same manner because the referenced stack frame’s thread would need to stop executing, or some other mechanism must be employed to ensure that the referenced stack frame is still valid. Do not access automatic or thread-local ob- jects from a thread other than the one with which the object is associated. See DCL30-C. Declare objects with appropriate storage durations for information on how to declare objects with appro- priate storage durations when data is not being shared between threads. 14.5.1"
+  },
+  {
+    "id": "CON34-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/c0.c",
+    "kind": "compliant",
+    "text": "// CON34-C: Compliant Solution (Static Storage Duration)\n#include <threads.h>\n#include <stdio.h>\n \nint child_thread(void *v) {\n  int *result = (int *)v;\n  printf(\"Result: %d\\n\", *result);  /* Correctly prints 1 */\n  return 0;\n}\n  \nvoid create_thread(thrd_t *tid) {\n  static int val = 1;\n  if (thrd_success != thrd_create(tid, child_thread, &val)) {\n    /* Handle error */\n  }\n}\n  \nint main(void) {\n  thrd_t tid;\n  create_thread(&tid);\n  if (thrd_success != thrd_join(tid, NULL)) {\n    /* Handle error */\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/c1.c",
+    "kind": "compliant",
+    "text": "// CON34-C: Compliant Solution (Allocated Storage Duration)\n#include <threads.h>\n#include <stdio.h>\n#include <stdlib.h>\n \nint child_thread(void *val) {\n  int *result = (int *)val;\n  printf(\"Result: %d\\n\", *result); /* Correctly prints 1 */\n  return 0;\n}\n  \nvoid create_thread(thrd_t *tid, int *value) {\n  *value = 1;\n  if (thrd_success != thrd_create(tid, child_thread,\n                                  value)) {\n    /* Handle error */\n  }\n}\n  \nint main(void) {\n  thrd_t tid;\n  int *value = (int *)malloc(sizeof(int));\n  if (!value) {\n    /* Handle error */\n  }\n  create_thread(&tid, value);\n  if (thrd_success != thrd_join(tid, NULL)) {\n    /* Handle error */\n  }\n  free(value);\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/c2.c",
+    "kind": "compliant",
+    "text": "// CON34-C: Compliant Solution (Thread-Specific Storage)\n#include <threads.h>\n#include <stdio.h>\n#include <stdlib.h>\n \nstatic tss_t key;\n \nint child_thread(void *v) {\n  int *result = v;\n  printf(\"Result: %d\\n\", *result); /* Correctly prints 1 */\n  return 0;\n}\n \nint create_thread(void *thrd) {\n  int *val = (int *)malloc(sizeof(int));\n  if (val == NULL) {\n    /* Handle error */\n  }\n  *val = 1;\n  if (thrd_success != tss_set(key, val)) {\n    /* Handle error */\n  }\n  /* ... */\n  void *v = tss_get(key);\n  if (thrd_success != thrd_create((thrd_t *)thrd,\n                                   child_thread, v)) {\n    /* Handle error */\n  }\n  return 0;\n}\n \nint main(void) {\n  thrd_t parent_tid, child_tid;\n \n  if (thrd_success != tss_create(&key, free)) {\n  /* Handle error */\n  }\n  if (thrd_success != thrd_create(&parent_tid, create_thread,\n                                  &child_tid)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_join(parent_tid, NULL)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_join(child_tid, NULL)) {\n    /* Handle error */\n  }\n  tss_delete(key);\nreturn 0;\n} \n"
+  },
+  {
+    "id": "CON34-C_samples_c3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/c3.c",
+    "kind": "compliant",
+    "text": "// CON34-C: Compliant Solution (Thread-Local Storage, Windows, Visual Studio)\n#include <Windows.h>\n#include <stdio.h>\n \nDWORD WINAPI child_thread(LPVOID v) {\n  int *result = (int *)v;\n  printf(\"Result: %d\\n\", *result);  /* Correctly prints 1 */\n  return NULL;\n}\n \nint create_thread(HANDLE *tid) {\n  /* Declare val as a thread-local value */\n  __declspec(thread) int val = 1;\n  *tid = create_thread(NULL, 0, child_thread, &val, 0, NULL);\n  return *tid == NULL;\n}\n \nint main(void) {\n  HANDLE tid;\n  \n  if (create_thread(&tid)) {\n    /* Handle error */\n  }\n  \n  if (WAIT_OBJECT_0 != WaitForSingleObject(tid, INFINITE)) {\n    /* Handle error */\n  }\n  CloseHandle(tid);\n  \n  return 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_c4.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/c4.c",
+    "kind": "compliant",
+    "text": "// CON34-C: Compliant Solution (OpenMP, parallel, private)\n#include <omp.h>\n#include <stdio.h>\n \nint main(void) {\n  int j = 0;\n  #pragma omp parallel private(j)\n  {\n    int t = omp_get_thread_num();\n    printf(\"Running thread - %d\\n\", t);\n    for (int i = 0; i < 5050; i++) {\n    j++;\n    }\n    printf(\"Just ran thread - %d\\n\", t);\n    printf(\"loop count %d\\n\", j);\n  }\nreturn 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/nc0.c",
+    "kind": "noncompliant",
+    "text": "// CON34-C: Noncompliant Code Example (Automatic Storage Duration)\n#include <threads.h>\n#include <stdio.h>\n \nint child_thread(void *val) {\n  int *res = (int *)val;\n  printf(\"Result: %d\\n\", *res);\n  return 0;\n}\n \nvoid create_thread(thrd_t *tid) {\n  int val = 1;\n  if (thrd_success != thrd_create(tid, child_thread, &val)) {\n    /* Handle error */\n  }\n}\n \nint main(void) {\n  thrd_t tid;\n  create_thread(&tid);\n   \n  if (thrd_success != thrd_join(tid, NULL)) {\n    /* Handle error */\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/nc1.c",
+    "kind": "noncompliant",
+    "text": "// CON34-C: Noncompliant Code Example (Automatic Storage Duration)\n#include <threads.h>\n#include <stdio.h>\n \nint child_thread(void *val) {\n  int *result = (int *)val;\n  printf(\"Result: %d\\n\", *result);  /* Correctly prints 1 */\n  return 0;\n}\n  \nvoid create_thread(thrd_t *tid, int *val) {\n  if (thrd_success != thrd_create(tid, child_thread, val)) {\n    /* Handle error */\n  }\n}\n  \nint main(void) {\n  int val = 1;\n  thrd_t tid;\n  create_thread(&tid, &val);\n  if (thrd_success != thrd_join(tid, NULL)) {\n    /* Handle error */\n  }\n  return 0;\n}\n"
+  },
+  {
+    "id": "CON34-C_samples_nc2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/nc2.c",
+    "kind": "noncompliant",
+    "text": "// CON34-C: Noncompliant Code Example (Thread-Specific Storage)\n#include <threads.h>\n#include <stdio.h>\n#include <stdlib.h>\n  \nstatic tss_t key;\n  \nint child_thread(void *v) {\n  void *result = tss_get(*(tss_t *)v);\n  printf(\"Result: %d\\n\", *(int *)result);\n  return 0;\n}\n  \nint create_thread(void *thrd) {\n  int *val = (int *)malloc(sizeof(int));\n  if (val == NULL) {\n    /* Handle error */\n  }\n  *val = 1;\n  if (thrd_success != tss_set(key, val)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_create((thrd_t *)thrd,\n                                  child_thread, &key)) {\n    /* Handle error */\n  }\n  return 0;\n}\n \nint main(void) {\n  thrd_t parent_tid, child_tid;\n \n  if (thrd_success != tss_create(&key, free)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_create(&parent_tid, create_thread,\n                                  &child_tid)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_join(parent_tid, NULL)) {\n    /* Handle error */\n  }\n  if (thrd_success != thrd_join(child_tid, NULL)) {\n    /* Handle error */\n  }\n  tss_delete(key);\n  return 0;\n} \n"
+  },
+  {
+    "id": "CON34-C_samples_nc3.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "CON34-C",
+    "file_path": "rules/con/34/nc3.c",
+    "kind": "noncompliant",
+    "text": "// CON34-C: Noncompliant Code Example (OpenMP, parallel)\n#include <omp.h>\n#include <stdio.h>\n  \nint main(void) {\n  int j = 0;\n  #pragma omp parallel\n  {\n    int t = omp_get_thread_num();\n    printf(\"Running thread - %d\\n\", t);\n    for (int i = 0; i < 5050; i++) {\n    j++; /* j not private; could be a race condition */\n    }\n    printf(\"Just ran thread - %d\\n\", t);\n    printf(\"loop count %d\\n\", j);\n  }\nreturn 0;\n}\n"
+  }
+]

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "ERR30-C_pdf_0",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "to set errno, and check errno only after the function returns a value indicating failure The value of is initialized to zero at program startup, but it is never subsequently set to errno zero by any C standard library function. The value of may be set to nonzero by a C stand- errno ard library function call whether or not there is an error, provided the use of is not docu- errno mented in the description of the function. It is meaningful for a program to inspect the contents of only after an error might have occurred. More precisely, is meaningful only after a errno errno library function that sets on error has returned an error code. errno According to Question 20.4 of C-FAQ [Summit 2005] In general, you should detect errors by checking return values, and use only to errno distinguish among the various causes of an error, such as “File not found” or “Permis- sion denied.” (Typically, you use or to print these discriminating error perror strerror messages.) It’s only necessary to detect errors with when a function does not errno have a unique, unambiguous, out-of-band error return (that is, because all of its possible return values are valid; one example is sic ). In these cases (and in these atoi [ ] cases only; check the documentation to be sure whether a function allows this), you can detect errors by setting to 0, calling the function, and then testing ."
+  },
+  {
+    "id": "ERR30-C_pdf_1",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "(Setting errno errno to 0 first is important, as no library function ever does that for you.) errno Note that is not required to set the value of . atoi() errno Library functions fall into the following categories: • Those that set errno and return and out-of-band error indicator • Those that set errno and return and in-band error indicator • Those that do not promise to set errno • Those with differing standards documentation 13.1.1 Library Functions that Set and Return an Out-of-Band Error errno Indicator The C Standard specifies that the functions listed in the following table set and return an errno out-of-band error indicator. That is, their return value on error can never be returned by a success- ful call. A program may set and check for these library functions but is not required to do so. The errno program should not check the value of without first verifying that the function returned an errno SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 374 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR30-C. Set errno to zero before calling a library function known to set errno, and check errno only after the function returns a value indicating failure error indicator. For example, should not be checked after calling without first errno signal() ensuring that actually returned ."
+  },
+  {
+    "id": "ERR30-C_pdf_2",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "signal() SIG_ERR Functions That Set and Return an Out-of-Band Error Indicator errno Function Name Return Value errno Value Positive ftell() -1L , Nonzero Positive fgetpos() fsetpos() , mbrtowc() mbsrtowcs() (size_t)(-1) EILSEQ Positive signal() SIG_ERR , wcrtomb() wcsrtombs() (size_t)(-1) EILSEQ , mbrtoc16() mbrtoc32() (size_t)(-1) EILSEQ , c16rtomb() cr32rtomb() (size_t)(-1) EILSEQ 13.1.2 Library Functions that Set and Return an In-Band Error Indicator errno The C Standard specifies that the functions listed in the following table set and return an errno in-band error indicator. That is, the return value when an error occurs is also a valid return value for successful calls. For example, the function returns and sets to strtoul() ULONG_MAX errno if an error occurs. Because is a valid return value, must be used to ERANGE ULONG_MAX errno check whether an error actually occurred. A program that uses for error checking must set errno it to before calling one of these library functions and then inspect before a subsequent 0 errno library function call. The and functions return in multiple cases, only one of which results fgetwc() fputwc() WEOF in setting . The string conversion functions will return the maximum or minimum repre- errno sentable value and set to if the converted value cannot be represented by the data errno ERANGE type."
+  },
+  {
+    "id": "ERR30-C_pdf_3",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "However, if the conversion cannot happen because the input is invalid, the function will re- turn , and the output pointer parameter will be assigned the value of the input pointer parameter, 0 provided the output parameter is non-null. Functions that Set and Return an In-Band Error Indicator errno Function Name Return Value errno Value , fgetwc() fputwc() WEOF EILSEQ , or strtol() wcstol() LONG_MIN LONG_MAX ERANGE , or strtoll() wcstoll() LLONG_MIN LLONG_MAX ERANGE , strtoul() wcstoul() ULONG_MAX ERANGE , strtoull() wcstoull() ULLONG_MAX ERANGE , strtoumax()wcstoumax() UINTMAX_MAX ERANGE , or strtod() wcstod() 0 ±HUGE_VAL ERANGE , or strtof() wcstof() 0 ±HUGE_VALF ERANGE SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 375 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR30-C. Set errno to zero before calling a library function known to set errno, and check errno only after the function returns a value indicating failure Function Name Return Value errno Value , or strtold() wcstold() 0 ±HUGE_VALL ERANGE , , strtoimax()wcstoimax() INTMAX_MIN INTMAX_MAX ERANGE 13.1.3 Library Functions that Do Not Promise to Set errno The C Standard fails to document the behavior of for some functions."
+  },
+  {
+    "id": "ERR30-C_pdf_4",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "For example, the errno function normally returns a null pointer in the event of an error, but no guarantees setlocale() are made about setting . errno After calling one of these functions, a program should not rely solely on the value of to de- errno termine if an error occurred. The function might have altered , but this does not ensure that errno will properly indicate an error condition. errno 13.1.4 Library Functions with Differing Standards Documentation Some functions behave differently regarding in various standards. The function errno fopen() is one such example. When encounters an error, it returns a null pointer. The C Standard fopen() makes no mention of when describing . However, POSIX.1 declares that when errno fopen() encounters an error, it returns a null pointer and sets to a value indicating the er- fopen() errno ror [IEEE Std 1003.1-2013]. The implication is that a program conforming to C but not to POSIX (such as a Windows program) should not check after calling , but a POSIX pro- errno fopen() gram may check if returns a null pointer. errno fopen() 13.1.5 Library Functions and errno The following uses of are documented in the C Standard: errno • Functions defined in <complex.h> may set errno but are not required to. • For numeric conversion functions in the strtod , strtol , wcstod , and wcstol families, if the correct result is outside the range of representable values, an appropriate minimum or maximum value is returned and the value is stored in ."
+  },
+  {
+    "id": "ERR30-C_pdf_5",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "For floating-point con- ERANGE errno version functions in the and families, if an underflow occurs, whether strtod wcstod acquires the value is implementation-defined. If the conversion fails, is re- errno ERANGE 0 turned and is not set. errno • The numeric conversion function atof() and those in the atoi family “need not affect the value of” . errno • For mathematical functions in <math.h> , if the integer expression math_errhandling & is nonzero, on a domain error, acquires the value ; on an overflow MATH_ERRNO errno EDOM with default rounding or if the mathematical result is an exact infinity from finite arguments, acquires the value ; and on an underflow, whether acquires the value errno ERANGE errno is implementation-defined. ERANGE • If a request made by calling signal() cannot be honored, a value of SIG_ERR is returned and a positive value is stored in . errno SEI CERT C Coding Standard: Rules for Developing Safe, Reliable, and Secure Systems 376 Software Engineering Institute | Carnegie Mellon University [DISTRIBUTION STATEMENT A] Approved for public release and unlimited distribution. Error Handling (ERR) - ERR30-C. Set errno to zero before calling a library function known to set errno, and check errno only after the function returns a value indicating failure • The byte I/O functions, wide-character I/O functions, and multibyte conversion functions store the value of the macro in if and only if an encoding error occurs."
+  },
+  {
+    "id": "ERR30-C_pdf_6",
+    "source": "CERT_PDF",
+    "cert_rule": "ERR30-C",
+    "title": "Set errno to zero before calling a library function known",
+    "kind": "description",
+    "text": "EILSEQ errno • On failure, fgetpos() and fsetpos() return nonzero and store an implementation-defined positive value in . errno • On failure, ftell() returns -1L and stores an implementation-defined positive value in . errno • The perror() function maps the error number in errno to a message and writes it to . stderr The POSIX.1 standard defines the use of by many more functions (including the C stand- errno ard library function). POSIX also has a small set of functions that are exceptions to the rule. These functions have no return value reserved to indicate an error, but they still set on error. To errno detect an error, an application must set to before calling the function and check whether errno 0 it is nonzero after the call. Affected functions include , , , strcoll() strxfrm() strerror() , , and .The C Standard allows these functions to set to a wcscoll() wcsxfrm() fwide() errno nonzero value on success. Consequently, this type of error checking should be performed only on POSIX systems. 13.1.6"
+  },
+  {
+    "id": "ERR30-C_samples_c0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR30-C",
+    "file_path": "rules/err/30/c0.c",
+    "kind": "compliant",
+    "text": "// ERR30-C: Compliant Solution (strtoul())\n#include <errno.h>\n#include <limits.h>\n#include <stdlib.h>\n  \nvoid func(const char *c_str) {\n  unsigned long number;\n  char *endptr;\n  \n  errno = 0;\n  number = strtoul(c_str, &endptr, 0);\n  if (endptr == c_str || (number == ULONG_MAX\n                         && errno == ERANGE)) {\n    /* Handle error */\n  } else {\n    /* Computation succeeded */\n  }\n}\n"
+  },
+  {
+    "id": "ERR30-C_samples_c1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR30-C",
+    "file_path": "rules/err/30/c1.c",
+    "kind": "compliant",
+    "text": "// ERR30-C: Compliant Solution (fopen(), C)\n#include <stdio.h>\n  \nvoid func(const char *filename) {\n  FILE *fileptr = fopen(filename, \"rb\");\n  if (fileptr == NULL)  {\n    /* An error occurred in fopen() */\n  }\n}\n"
+  },
+  {
+    "id": "ERR30-C_samples_c2.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR30-C",
+    "file_path": "rules/err/30/c2.c",
+    "kind": "compliant",
+    "text": "// ERR30-C: Compliant Solution (fopen(), POSIX)\n#include <errno.h>\n#include <stdio.h>\n  \nvoid func(const char *filename) {\n  FILE *fileptr;\n \n  errno = 0;\n  fileptr = fopen(filename, \"rb\");\n  if (fileptr == NULL)  {\n    /*\n     * An error occurred in fopen(); now it's valid\n     * to examine errno.\n     */\n    perror(filename);\n  }\n}\n"
+  },
+  {
+    "id": "ERR30-C_samples_nc0.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR30-C",
+    "file_path": "rules/err/30/nc0.c",
+    "kind": "noncompliant",
+    "text": "// ERR30-C: Noncompliant Code Example (strtoul())\n#include <errno.h>\n#include <limits.h>\n#include <stdlib.h>\n  \nvoid func(const char *c_str) {\n  unsigned long number;\n  char *endptr;\n   \n  number = strtoul(c_str, &endptr, 0);\n  if (endptr == c_str || (number == ULONG_MAX\n                         && errno == ERANGE)) {\n    /* Handle error */\n  } else {\n    /* Computation succeeded */\n  }\n}\n"
+  },
+  {
+    "id": "ERR30-C_samples_nc1.c",
+    "source": "CERT_SAMPLES",
+    "cert_rule": "ERR30-C",
+    "file_path": "rules/err/30/nc1.c",
+    "kind": "noncompliant",
+    "text": "// ERR30-C: Noncompliant Code Example (fopen())\n#include <errno.h>\n#include <stdio.h>\n  \nvoid func(const char *filename) {\n  FILE *fileptr;\n \n  errno = 0;\n  fileptr = fopen(filename, \"rb\");\n  if (errno != 0) {\n    /* Handle error */\n  }\n}\n"
+  }
+]
