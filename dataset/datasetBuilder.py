@@ -2,7 +2,7 @@ import re
 import os
 from openpyxl import Workbook, load_workbook
 
-ROOT = "itc-benchmarks"
+ROOT = "dataset/itc-benchmarks"
 SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ALL_ROWS = []
@@ -284,9 +284,9 @@ if __name__ == "__main__":
         folder = os.path.join(ROOT, sub)
 
         if sub == "01.w_Defects":
-            label = "Faulty"
+            label = "faulty"
         else:
-            label = "Non-Faulty"
+            label = "non-faulty"
 
         for fname in os.listdir(folder):
 
