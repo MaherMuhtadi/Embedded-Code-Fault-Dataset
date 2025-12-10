@@ -2,9 +2,9 @@ import re
 import os
 from openpyxl import Workbook, load_workbook
 
-ROOT = "dataset1/itc-benchmarks"
-SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.join(SCRIPT_DIR, "itc-benchmarks")
+SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 ALL_ROWS = []
 KEYWORDS = {
             "if","for","while","switch","return","sizeof","case","else","goto"
@@ -247,6 +247,7 @@ def main(c_file, label):
 
         single_line = " ".join(merged_full.split())
         c_file_dirname = c_file.replace("\\", "/")
+        c_file_dirname = "/".join(c_file_dirname.split("/")[-3:])
 
         ALL_ROWS.append([c_file_dirname, func, single_line, label])
 
