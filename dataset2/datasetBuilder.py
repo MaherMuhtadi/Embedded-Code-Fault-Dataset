@@ -4,7 +4,7 @@ import os
 from tqdm import tqdm
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = os.path.join(SCRIPT_DIR, "bigvul_subset.json")
+INPUT_FILE = os.path.join(SCRIPT_DIR, "MSR_data_cleaned.json")
 OUTPUT_FILE = os.path.join(SCRIPT_DIR, "dataset.jsonl")
 MAX_CHARS = 4000   # Safe upper bound for Llama 3.1 8B (4096-token window)
 
