@@ -1,3 +1,6 @@
 # Ignore cloned repositories of regehr/itc-benchmarks and dyesmar/sei-cert-ccs-samples to avoid staging issues
 sei-cert-ccs-samples
 itc-benchmarks
+
+# Ignore Big-Vul dataset download
+MSR_data_cleaned.json
