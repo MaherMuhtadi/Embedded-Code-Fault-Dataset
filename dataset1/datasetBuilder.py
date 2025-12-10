@@ -2,7 +2,7 @@ import re
 import os
 from openpyxl import Workbook, load_workbook
 
-ROOT = "dataset/itc-benchmarks"
+ROOT = "dataset1/itc-benchmarks"
 SUBDIRS = ["01.w_Defects", "02.wo_Defects"]
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ALL_ROWS = []
@@ -214,13 +214,6 @@ def main(c_file, label):
         # No obvious main: treat all functions as top-level
         top_level_funcs = sorted(func_blocks.keys())
 
-    # Create Excel
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Functions"
-
-    ws.append(["Directory", "Function Name", "Code", "Label"])
-
     # Process each top-level function
     for func in top_level_funcs:
         # Merge this function with all helpers it references (recursively)
@@ -255,25 +248,7 @@ def main(c_file, label):
         single_line = " ".join(merged_full.split())
         c_file_dirname = c_file.replace("\\", "/")
 
-        ws.append([c_file_dirname, func, single_line, label])
-
-    # Output file name
-    output_file = f"{SCRIPT_DIR}/{label}/{os.path.basename(c_file)[:-2]}.xlsx"
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    wb.save(output_file)
-    print(f"\nExcel file created: {output_file}\n")
-
-    # Collect rows for combined dataset
-    wb_individual = load_workbook(output_file)
-    ws_individual = wb_individual.active
-
-    # Skip header row for all except the first file
-    for i, row in enumerate(ws_individual.iter_rows(values_only=True)):
-        if i == 0 and not ALL_ROWS:
-            ALL_ROWS.append(row)  # include header only once
-        elif i > 0:
-            ALL_ROWS.append(row)
-
+        ALL_ROWS.append([c_file_dirname, func, single_line, label])
 
 
 # Entry point
@@ -284,9 +259,9 @@ if __name__ == "__main__":
         folder = os.path.join(ROOT, sub)
 
         if sub == "01.w_Defects":
-            label = "faulty"
+            label = 1
         else:
-            label = "non-faulty"
+            label = 0
 
         for fname in os.listdir(folder):
 
@@ -304,6 +279,7 @@ if __name__ == "__main__":
     combined_wb = Workbook()
     combined_ws = combined_wb.active
     combined_ws.title = "Combined"
+    combined_ws.append(["Directory", "Function Name", "Code", "Label"])
 
     for row in ALL_ROWS:
         combined_ws.append(row)
