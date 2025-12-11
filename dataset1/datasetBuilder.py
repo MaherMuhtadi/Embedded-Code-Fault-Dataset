@@ -1,6 +1,6 @@
 import re
 import os
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(SCRIPT_DIR, "itc-benchmarks")

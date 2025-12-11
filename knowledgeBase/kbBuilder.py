@@ -3,22 +3,20 @@ import json
 import numpy as np
 from tqdm import tqdm
 from typing import List, Dict
-
+import os
 import faiss
 from nomic import embed
 
 
 # Paths
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-CWE_JSONL = "knowledgeBase/vectorKB/all_cwe_docs.jsonl"
-CERT_JSONL = "knowledgeBase/vectorKB/all_cert_docs.jsonl"
+CWE_JSONL = os.path.join(SCRIPT_DIR, "vectorKB", "all_cwe_docs.jsonl")
+CERT_JSONL = os.path.join(SCRIPT_DIR, "vectorKB", "all_cert_docs.jsonl")
 
-OUT_DIR = "knowledgeBase/vectorKB"
-META_OUT = os.path.join(OUT_DIR, "vector_meta.jsonl")
-FAISS_OUT = os.path.join(OUT_DIR, "faiss_index.bin")
-EMB_MATRIX_OUT = os.path.join(OUT_DIR, "embedding_matrix.npy")
-
-os.makedirs(OUT_DIR, exist_ok=True)
+META_OUT = os.path.join(SCRIPT_DIR, "vectorKB", "vector_meta.jsonl")
+FAISS_OUT = os.path.join(SCRIPT_DIR, "vectorKB", "faiss_index.bin")
+EMB_MATRIX_OUT = os.path.join(SCRIPT_DIR, "vectorKB", "embedding_matrix.npy")
 
 
 # Helpers
