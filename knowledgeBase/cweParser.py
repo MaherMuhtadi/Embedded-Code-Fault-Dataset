@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 # Paths
 
 CWE_XML_PATH = "cweData/cwec_v4.18.xml"
-EXTRACTED_IDS_PATH = "mapping/extracted_ids.json"
+EXTRACTED_IDS_PATH = "faultTypes/extracted_ids.json"
 OUTPUT_DIR = "vectorKB/cwe"
 OUTPUT_JSONL = "vectorKB/all_cwe_docs.jsonl"
 
