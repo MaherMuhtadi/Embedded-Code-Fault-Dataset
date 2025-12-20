@@ -1,6 +1,6 @@
 import re
 import os
-from openpyxl import Workbook
+import json
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(SCRIPT_DIR, "itc-benchmarks")
@@ -276,15 +276,18 @@ if __name__ == "__main__":
             print(f"Processing: {full_path}")
             main(full_path, label)
     
-    # Write combined dataset
-    combined_wb = Workbook()
-    combined_ws = combined_wb.active
-    combined_ws.title = "Combined"
-    combined_ws.append(["Directory", "Function Name", "Code", "Label"])
+    # Write combined dataset to JSONL
+    combined_output = os.path.join(SCRIPT_DIR, "dataset.jsonl")
+    with open(combined_output, "w", encoding="utf-8") as out:
+        for row in ALL_ROWS:
+            obj = {
+                "Directory": row[0],
+                "Function Name": row[1],
+                "Language": "C",
+                "Code": row[2],
+                "Label": row[3],
+            }
+            out.write(json.dumps(obj, ensure_ascii=False))
+            out.write("\n")
 
-    for row in ALL_ROWS:
-        combined_ws.append(row)
-
-    combined_output = os.path.join(SCRIPT_DIR, "dataset.xlsx")
-    combined_wb.save(combined_output)
-    print(f"\nCombined Excel file created: {combined_output}\n")
+    print(f"\nCombined JSONL file created: {combined_output}\n")
