@@ -5,7 +5,7 @@ import json
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(SCRIPT_DIR)
 INPUT_FILE = os.path.join(SCRIPT_DIR, "extractedData.jsonl")
-EXTRACTED_IDS_FILE = os.path.join(PARENT_DIR, "faultTypes", "extracted_ids.json")
+EXTRACTED_IDS_FILE = os.path.join(PARENT_DIR, "itcFaultTypes", "extracted_ids.json")
 OUTPUT_FILE = os.path.join(SCRIPT_DIR, "subset.jsonl")
 
 

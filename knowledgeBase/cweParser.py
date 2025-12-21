@@ -10,7 +10,7 @@ from typing import List, Dict, Any
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(SCRIPT_DIR)
 CWE_XML_PATH = os.path.join(SCRIPT_DIR, "cweData", "cwec_v4.18.xml")
-EXTRACTED_IDS_PATH = os.path.join(PARENT_DIR, "faultTypes", "extracted_ids.json")
+EXTRACTED_IDS_PATH = os.path.join(PARENT_DIR, "itcFaultTypes", "extracted_ids.json")
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "vectorKB", "cwe")
 OUTPUT_JSONL = os.path.join(SCRIPT_DIR, "vectorKB", "all_cwe_docs.jsonl")
 

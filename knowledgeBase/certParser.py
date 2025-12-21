@@ -9,7 +9,7 @@ import pdfplumber
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(SCRIPT_DIR)
-EXTRACTED_IDS_PATH = os.path.join(PARENT_DIR, "faultTypes", "extracted_ids.json")
+EXTRACTED_IDS_PATH = os.path.join(PARENT_DIR, "itcFaultTypes", "extracted_ids.json")
 
 PDF_PATH = os.path.join(SCRIPT_DIR, "certData", "SEI_CERT_C_Coding_Standard_2016_Edition.pdf")
 SAMPLES_ROOT = os.path.join(SCRIPT_DIR, "certData", "sei-cert-ccs-samples")
@@ -217,7 +217,7 @@ def build_docs_from_samples() -> Dict[str, List[Dict]]:
             # Build CERT rule ID: e.g. arr/30 → ARR30-C
             rule_id = f"{category.upper()}{num}-C"
 
-            # Only keep rules relevant to faultTypes/extracted_ids.json
+            # Only keep rules relevant to itcFaultTypes/extracted_ids.json
             if rule_id not in TARGET_RULE_IDS:
                 continue
 
