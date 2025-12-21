@@ -276,8 +276,8 @@ if __name__ == "__main__":
             print(f"Processing: {full_path}")
             main(full_path, label)
     
-    # Write combined dataset to JSONL
-    combined_output = os.path.join(SCRIPT_DIR, "dataset.jsonl")
+    # Write combined JSONL
+    combined_output = os.path.join(SCRIPT_DIR, "subset.jsonl")
     with open(combined_output, "w", encoding="utf-8") as out:
         for row in ALL_ROWS:
             obj = {
