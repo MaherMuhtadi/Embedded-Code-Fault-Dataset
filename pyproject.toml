@@ -9,7 +9,6 @@ dependencies = [
     "ijson>=3.4.0.post0",
     "nomic>=3.9.0",
     "numpy>=2.3.5",
-    "openpyxl>=3.1.5",
     "pdfplumber>=0.11.8",
     "tqdm>=4.67.1",
 ]
