@@ -34,6 +34,11 @@ def merge_subsets():
                         directory = row.get("Directory", "")
                         filename = os.path.basename(directory)
                         fault_type = filename.replace(".c", "")
+
+                        # Handle specific naming inconsistency
+                        if fault_type == "free_nondynamically_allocated_memory":
+                            fault_type = "free_nondynamic_allocated_memory"
+                            
                     else:
                         fault_type = row.get("CWE ID", "")
                     
