@@ -40,7 +40,6 @@ def merge_subsets():
                     ordered_row = {
                         "Source": source,
                         "Type": fault_type,
-                        "Language": row.get("Language", ""),
                         "Code": row.get("Code", ""),
                         "Label": row.get("Label", "")
                     }
