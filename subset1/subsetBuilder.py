@@ -11,58 +11,83 @@ KEYWORDS = {
         }
 
 
-# Remove comment-only lines
+# Remove comments
 
-def strip_comment_only_lines(code):
-    cleaned = []
+def strip_all_c_comments(code: str) -> str:
+    out = []
     i = 0
-    while i < len(code):
-        # Find the next line
-        newline_pos = code.find('\n', i)
-        if newline_pos == -1:
-            line = code[i:]
-            next_i = len(code)
-        else:
-            line = code[i:newline_pos]
-            next_i = newline_pos + 1
-        
-        stripped = line.strip()
-        
-        # Skip lines that are entirely comments
-        if stripped.startswith("//") or (stripped.startswith("/*") and stripped.endswith("*/")):
-            i = next_i
+    n = len(code)
+
+    in_block = False
+    in_str = False
+    in_char = False
+    escape = False
+
+    while i < n:
+        c = code[i]
+        nxt = code[i+1] if i + 1 < n else ""
+
+        if in_block:
+            # End of block comment
+            if c == "*" and nxt == "/":
+                in_block = False
+                i += 2
+                continue
+            i += 1
             continue
-        
-        # Remove in-line comments from the line
-        cleaned_line = ""
-        j = 0
-        while j < len(line):
-            # Check for // comment
-            if j < len(line) - 1 and line[j:j+2] == "//":
-                # Rest of line is comment, stop processing
-                break
-            # Check for /* comment
-            elif j < len(line) - 1 and line[j:j+2] == "/*":
-                # Find the end of the comment
-                end_pos = line.find("*/", j + 2)
-                if end_pos != -1:
-                    # Skip from /* to */
-                    j = end_pos + 2
-                else:
-                    # Unclosed comment, skip rest of line
-                    break
-            else:
-                cleaned_line += line[j]
-                j += 1
-        
-        # Remove trailing whitespace and add to cleaned list
-        cleaned_line = cleaned_line.rstrip()
-        if cleaned_line:  # Only add non-empty lines
-            cleaned.append(cleaned_line)
-        
-        i = next_i
-    
-    return "\n".join(cleaned)
+
+        if in_str:
+            out.append(c)
+            if escape:
+                escape = False
+            elif c == "\\":
+                escape = True
+            elif c == '"':
+                in_str = False
+            i += 1
+            continue
+
+        if in_char:
+            out.append(c)
+            if escape:
+                escape = False
+            elif c == "\\":
+                escape = True
+            elif c == "'":
+                in_char = False
+            i += 1
+            continue
+
+        # Not in comment/string/char
+        if c == '"' :
+            in_str = True
+            out.append(c)
+            i += 1
+            continue
+
+        if c == "'":
+            in_char = True
+            out.append(c)
+            i += 1
+            continue
+
+        # Line comment
+        if c == "/" and nxt == "/":
+            # skip until newline (but keep newline)
+            while i < n and code[i] != "\n":
+                i += 1
+            continue
+
+        # Block comment
+        if c == "/" and nxt == "*":
+            in_block = True
+            i += 2
+            continue
+
+        out.append(c)
+        i += 1
+
+    return "".join(out)
 
 
 # Extract top-level global variable declarations
@@ -217,8 +242,7 @@ def main(c_file, label):
     with open(c_file, "r") as f:
         c_code = f.read()
 
-    # Clean code (remove comment-only lines, keep main functions)
-    c_code = strip_comment_only_lines(c_code)
+    c_code = strip_all_c_comments(c_code)
 
     # Extract components
     macros = extract_useful_macros(c_code)
