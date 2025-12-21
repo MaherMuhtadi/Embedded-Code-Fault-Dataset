@@ -15,11 +15,53 @@ KEYWORDS = {
 
 def strip_comment_only_lines(code):
     cleaned = []
-    for line in code.splitlines():
+    i = 0
+    while i < len(code):
+        # Find the next line
+        newline_pos = code.find('\n', i)
+        if newline_pos == -1:
+            line = code[i:]
+            next_i = len(code)
+        else:
+            line = code[i:newline_pos]
+            next_i = newline_pos + 1
+        
         stripped = line.strip()
+        
+        # Skip lines that are entirely comments
         if stripped.startswith("//") or (stripped.startswith("/*") and stripped.endswith("*/")):
+            i = next_i
             continue
-        cleaned.append(line)
+        
+        # Remove in-line comments from the line
+        cleaned_line = ""
+        j = 0
+        while j < len(line):
+            # Check for // comment
+            if j < len(line) - 1 and line[j:j+2] == "//":
+                # Rest of line is comment, stop processing
+                break
+            # Check for /* comment
+            elif j < len(line) - 1 and line[j:j+2] == "/*":
+                # Find the end of the comment
+                end_pos = line.find("*/", j + 2)
+                if end_pos != -1:
+                    # Skip from /* to */
+                    j = end_pos + 2
+                else:
+                    # Unclosed comment, skip rest of line
+                    break
+            else:
+                cleaned_line += line[j]
+                j += 1
+        
+        # Remove trailing whitespace and add to cleaned list
+        cleaned_line = cleaned_line.rstrip()
+        if cleaned_line:  # Only add non-empty lines
+            cleaned.append(cleaned_line)
+        
+        i = next_i
+    
     return "\n".join(cleaned)
 
 
