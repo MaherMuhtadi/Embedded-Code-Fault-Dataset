@@ -7,8 +7,10 @@ from collections import Counter, defaultdict
 
 # Per-source stratified split (70/10/20) on Type/Label, then concat
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(SCRIPT_DIR)
 INPUT_PATH = os.path.join(SCRIPT_DIR, "dataset.jsonl")
 OUT_DIR = os.path.join(SCRIPT_DIR, "partitions")
+ITC_FAULTS_PATH = os.path.normpath(os.path.join(PARENT_DIR, "itcFaultTypes", "faults.json"))
 
 RANDOM_SEED = 1337
 
@@ -97,6 +99,49 @@ def compute_stats(splits):
     return stats
 
 
+def load_fault_cwe_map(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    mapping = {}
+    for entry in data:
+        file_name = entry.get("File Name")
+        if not file_name:
+            continue
+        mapping[str(file_name)] = [str(cwe) for cwe in entry.get("CWE IDs", []) if cwe]
+    return mapping
+
+
+def compute_cwe_extremes(rows, fault_cwe_map, top_n=10):
+    cwe_counts = Counter()
+
+    for row in rows:
+        cwes = set()
+        type_val = str(row.get("Type", ""))
+
+        if type_val.startswith("CWE-"):
+            cwes.add(type_val)
+        else:
+            mapped = fault_cwe_map.get(type_val, [])
+            for cwe in mapped:
+                cwes.add(str(cwe))
+
+        for cwe in cwes:
+            cwe_counts[cwe] += 1
+
+    most_common = sorted(cwe_counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    least_common = sorted(cwe_counts.items(), key=lambda kv: (kv[1], kv[0]))
+
+    top = [{"type": cwe, "count": count} for cwe, count in most_common[:top_n]]
+    bottom = [{"type": cwe, "count": count} for cwe, count in least_common[:top_n]]
+
+    return {
+        "totals": dict(cwe_counts),
+        "top_10": top,
+        "bottom_10": bottom,
+    }
+
+
 def main():
     split_ratios = (TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
     if abs(sum(split_ratios) - 1.0) > 1e-6:
@@ -148,11 +193,15 @@ def main():
     write_jsonl(os.path.join(OUT_DIR, "val.jsonl"), val_rows)
     write_jsonl(os.path.join(OUT_DIR, "test.jsonl"), test_rows)
 
+    fault_cwe_map = load_fault_cwe_map(ITC_FAULTS_PATH)
+
     split_stats = compute_stats({
         "train": train_rows,
         "val": val_rows,
         "test": test_rows,
     })
+
+    split_stats["cwe"] = compute_cwe_extremes(rows, fault_cwe_map)
 
     with open(os.path.join(OUT_DIR, "split_stats.json"), "w", encoding="utf-8") as f:
         json.dump(split_stats, f, indent=2, ensure_ascii=False)
