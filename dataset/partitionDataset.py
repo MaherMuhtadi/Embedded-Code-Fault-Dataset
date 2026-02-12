@@ -15,8 +15,7 @@ ITC_FAULTS_PATH = os.path.normpath(os.path.join(PARENT_DIR, "itcFaultTypes", "fa
 RANDOM_SEED = 1337
 
 TRAIN_RATIO = 0.70
-VAL_RATIO = 0.10
-TEST_RATIO = 0.20
+TEST_RATIO = 0.30
 
 REQUIRED_KEYS = ["Source", "Type", "Code", "Label"]
 
@@ -50,23 +49,23 @@ def validate_rows(rows):
 
 
 def allocate_counts(count, ratios):
-    """Split count items into train/val/test using ratios; keep totals exact."""
+    """Split count items into train/test using ratios; keep totals exact."""
     if count <= 0:
-        return 0, 0, 0
+        return 0, 0
 
     expected = [count * r for r in ratios]
     allocated = [math.floor(x) for x in expected]
     remainder = count - sum(allocated)
 
-    fractional = [(expected[i] - allocated[i], i) for i in range(3)]
+    fractional = [(expected[i] - allocated[i], i) for i in range(2)]
     fractional.sort(reverse=True)
     for _, idx in fractional[:remainder]:
         allocated[idx] += 1
 
-    if count >= 3:
-        for idx in (1, 2):  # ensure val/test not empty when possible
+    if count >= 2:
+        for idx in (1,):  # ensure test not empty when possible
             if allocated[idx] == 0:
-                donor = max(range(3), key=lambda t: allocated[t])
+                donor = max(range(2), key=lambda t: allocated[t])
                 if allocated[donor] > 1:
                     allocated[donor] -= 1
                     allocated[idx] += 1
@@ -143,9 +142,9 @@ def compute_cwe_extremes(rows, fault_cwe_map, top_n=10):
 
 
 def main():
-    split_ratios = (TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
+    split_ratios = (TRAIN_RATIO, TEST_RATIO)
     if abs(sum(split_ratios) - 1.0) > 1e-6:
-        raise ValueError("TRAIN_RATIO + VAL_RATIO + TEST_RATIO must sum to 1.0")
+        raise ValueError("TRAIN_RATIO + TEST_RATIO must sum to 1.0")
 
     rng = random.Random(RANDOM_SEED)
 
@@ -157,7 +156,6 @@ def main():
         rows_by_source[row["Source"]].append(row)
 
     train_rows = []
-    val_rows = []
     test_rows = []
 
     for _, source_rows in rows_by_source.items():
@@ -166,38 +164,31 @@ def main():
             strata[make_stratum_key(row)].append(row)
 
         source_train = []
-        source_val = []
         source_test = []
 
         for group in strata.values():
             rng.shuffle(group)
-            n_train, n_val, n_test = allocate_counts(len(group), split_ratios)
+            n_train, n_test = allocate_counts(len(group), split_ratios)
             source_train.extend(group[:n_train])
-            source_val.extend(group[n_train:n_train + n_val])
-            source_test.extend(group[n_train + n_val:n_train + n_val + n_test])
+            source_test.extend(group[n_train:n_train + n_test])
 
         rng.shuffle(source_train)
-        rng.shuffle(source_val)
         rng.shuffle(source_test)
 
         train_rows.extend(source_train)
-        val_rows.extend(source_val)
         test_rows.extend(source_test)
 
     rng.shuffle(train_rows)
-    rng.shuffle(val_rows)
     rng.shuffle(test_rows)
 
     os.makedirs(OUT_DIR, exist_ok=True)
     write_jsonl(os.path.join(OUT_DIR, "train.jsonl"), train_rows)
-    write_jsonl(os.path.join(OUT_DIR, "val.jsonl"), val_rows)
     write_jsonl(os.path.join(OUT_DIR, "test.jsonl"), test_rows)
 
     fault_cwe_map = load_fault_cwe_map(ITC_FAULTS_PATH)
 
     split_stats = compute_stats({
         "train": train_rows,
-        "val": val_rows,
         "test": test_rows,
     })
 
@@ -208,7 +199,6 @@ def main():
 
     print("Split complete")
     print(f"Train: {len(train_rows)}")
-    print(f"Val:   {len(val_rows)}")
     print(f"Test:  {len(test_rows)}")
     print(f"Sources: {sorted(rows_by_source.keys())}")
 
