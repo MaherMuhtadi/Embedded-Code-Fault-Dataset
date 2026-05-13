@@ -291,9 +291,9 @@ for idx in indices[0]:
 
 If you use this dataset in your research, please cite the original data sources:
 
-**[1]** J. Regehr, "Static analysis benchmarks from Toyota ITC," GitHub, [Online]. Available: https://github.com/regehr/itc-benchmarks. [Accessed: Nov. 18, 2025].
+- J. Regehr, "Static analysis benchmarks from Toyota ITC," GitHub, [Online]. Available: https://github.com/regehr/itc-benchmarks. [Accessed: Nov. 18, 2025].
 
-**[2]** J. Fan, Y. Li, S. Wang, and T. N. Nguyen, "A C/C++ code vulnerability dataset with code changes and CVE summaries," in Proc. 17th Int. Conf. Mining Softw. Repositories (MSR), New York, NY, USA, Sep. 2020, pp. 508–512, doi: 10.1145/3379597.3387501.
+- J. Fan, Y. Li, S. Wang, and T. N. Nguyen, "A C/C++ code vulnerability dataset with code changes and CVE summaries," in Proc. 17th Int. Conf. Mining Softw. Repositories (MSR), New York, NY, USA, Sep. 2020, pp. 508–512, doi: 10.1145/3379597.3387501.
 
 Additional references for the knowledge base:
 
@@ -302,7 +302,7 @@ Additional references for the knowledge base:
 
 ## Publications
 
-The following works used this repository and its artifacts:
+This repository and its generated artifacts are part of the following works:
 
 - M. Muhtadi, Q. H. Mahmoud, and A. Azim, "Adaptive Self-Prompting in Agentic LLM Frameworks for Code Fault Detection," Software, vol. 5, no. 2, art. no. 16, 2026. doi:10.3390/software5020016. [Online]. Available: https://www.mdpi.com/2674-113X/5/2/16
 
