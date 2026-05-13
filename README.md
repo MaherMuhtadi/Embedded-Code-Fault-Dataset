@@ -31,6 +31,7 @@ The repository also builds a vector knowledge base from [CWE entries](https://cw
   - [5. Generate dataset statistics](#5-generate-dataset-statistics)
   - [6. Build the knowledge base](#6-build-the-knowledge-base)
 - [Outputs](#outputs)
+- [Citation](#citation)
 - [License](#license)
 - [Notes](#notes)
 
