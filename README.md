@@ -31,7 +31,6 @@ The repository also builds a vector knowledge base from [CWE entries](https://cw
   - [5. Generate dataset statistics](#5-generate-dataset-statistics)
   - [6. Build the knowledge base](#6-build-the-knowledge-base)
 - [Outputs](#outputs)
-- [Publications](#publications)
 - [License](#license)
 - [Notes](#notes)
 
@@ -299,8 +298,6 @@ Additional references for the knowledge base:
 
 - **CWE**: [Common Weakness Enumeration](https://cwe.mitre.org/data/)
 - **SEI CERT C**: [SEI CERT C Coding Standard](https://wiki.sei.cmu.edu/confluence/spaces/c/pages/87152044/SEI+CERT+C+Coding+Standard)
-
-## Publications
 
 This repository and its generated artifacts are part of the following works:
 
