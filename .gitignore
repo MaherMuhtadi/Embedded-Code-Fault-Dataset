@@ -4,3 +4,6 @@ itc-benchmarks
 
 # Ignore Big-Vul dataset download
 MSR_data_cleaned.json
+
+# Ignore SEI CERT C Coding Standard PDF download
+knowledgeBase/certData/SEI_CERT_C_Coding_Standard_*.pdf
